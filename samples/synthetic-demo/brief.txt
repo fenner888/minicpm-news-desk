@@ -1,0 +1,25 @@
+MINICPM NEWS DESK — SOURCE QUOTES / REVIEW REQUIRED
+
+SYNTHETIC — Cedar source-detail demo
+
+synthetic_selector_demo
+
+ready_for_selection_review_required
+
+published: Unknown
+
+first_seen: Unknown
+
+Highlights — what changed and how it is used
+
+Cedar converts a change list into a review checklist.
+
+1 protected source block(s) are already quoted in full above; they are not repeated here.
+
+It is available only to invited U.S. teams with administrator approval.
+
+It costs $0.20 per completed checklist; larger-team pricing is unannounced.
+
+Each session is limited to five checklists. A person must review the result; it cannot merge code.
+
+Rules can miss conditions and context. Source quotations are not independently verified facts; meaning review is required.

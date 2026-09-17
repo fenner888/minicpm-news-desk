@@ -1,0 +1,26 @@
+{
+  "version": "0.6.1-dev1",
+  "contract": "newsdesk-passages-v1",
+  "mode": "synthetic_selector_demo",
+  "started_at": "2026-09-17T17:57:26.380611+00:00",
+  "model_attempts": 0,
+  "model_calls_completed": 0,
+  "fetch_attempts": 0,
+  "delivery": "not_sent",
+  "status": "complete_review_required",
+  "code_sha256": {
+    "facts.py": "d200cdac1f2349668e17d015a6dcb7e818ab2efdcc41820f3f0d8469d2f49047",
+    "selector.py": "953c73171f25b82755eabefee59c974c9de72e8ccab68e9d0f6ea7e4d6d21087",
+    "__init__.py": "e3a008020341046c4a844c14b27b25d3590ddb4924ee19a27c62358f59be197e",
+    "core.py": "3fc77ea3c3dc014b411262376088f28078765cb0aca4afe14506f7fcdd50bbcc",
+    "network.py": "def233b27b6b56ae03115ed24d892e8b8ea31b95c60fb0c1b80104537c017a10",
+    "workflow.py": "eea6f1ad38861c7599e80d3e031e54486a154f33457aed8e8bb19b1c2ae1d70b",
+    "__main__.py": "7505299b9f71f66b4e39f6aa360c4df9c51ac863c0829f8f9192e6cc66522954"
+  },
+  "origin": "synthetic_selector_demo",
+  "selector_contract": "newsdesk-highlights-v2",
+  "policy_sha256": "e4d258a7f7c54f60f6213d4699dffd33ab077e5ba7db1a57bfb60e79ecee29e9",
+  "packet_sha256": "5ef3b6fd84c6bb89cbe5f9e093b12782fb3c2ca53c06f03cb594c88ffb41e54d",
+  "completed_at": "2026-09-17T17:57:26.382207+00:00",
+  "selection_outcome": "model_highlights"
+}

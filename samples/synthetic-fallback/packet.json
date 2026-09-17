@@ -1,0 +1,86 @@
+{
+  "contract": "newsdesk-highlights-v2",
+  "policy_sha256": "e4d258a7f7c54f60f6213d4699dffd33ab077e5ba7db1a57bfb60e79ecee29e9",
+  "article_identity_sha256": "42f7c8926c733937be61b799c948c6a93123eaa11978e50a24857e0268c4a25e",
+  "source_sha256": "7891e4336a4b8726ba4660eb175ec8d2aa296dac9f97414f61d41e6865ef3673",
+  "title": "SYNTHETIC — Cedar source-detail demo",
+  "protected": [
+    {
+      "id": "b002",
+      "start": 55,
+      "end": 108,
+      "text": "Cedar converts a change list into a review checklist.",
+      "rules": [
+        "context_for:b003"
+      ]
+    },
+    {
+      "id": "b003",
+      "start": 109,
+      "end": 180,
+      "text": "It is available only to invited U.S. teams with administrator approval.",
+      "rules": [
+        "access_limits",
+        "context_for:b004"
+      ]
+    },
+    {
+      "id": "b004",
+      "start": 181,
+      "end": 256,
+      "text": "It costs $0.20 per completed checklist; larger-team pricing is unannounced.",
+      "rules": [
+        "price"
+      ]
+    },
+    {
+      "id": "b005",
+      "start": 257,
+      "end": 355,
+      "text": "Each session is limited to five checklists. A person must review the result; it cannot merge code.",
+      "rules": [
+        "access_limits"
+      ]
+    }
+  ],
+  "pool": [
+    {
+      "id": "b001",
+      "start": 0,
+      "end": 54,
+      "text": "This is fictional evaluation data, not a real release."
+    },
+    {
+      "id": "b002",
+      "start": 55,
+      "end": 108,
+      "text": "Cedar converts a change list into a review checklist."
+    },
+    {
+      "id": "b003",
+      "start": 109,
+      "end": 180,
+      "text": "It is available only to invited U.S. teams with administrator approval."
+    },
+    {
+      "id": "b004",
+      "start": 181,
+      "end": 256,
+      "text": "It costs $0.20 per completed checklist; larger-team pricing is unannounced."
+    }
+  ],
+  "warnings": [
+    "Rules can miss conditions and context. Source quotations are not independently verified facts; meaning review is required."
+  ],
+  "hold_reasons": [],
+  "status": "ready_for_selection_review_required",
+  "counts": {
+    "source_chars": 355,
+    "blocks": 5,
+    "protected_chars": 297,
+    "pool_chars": 253,
+    "eligible_blocks_not_in_pool": 1,
+    "ignored_block_ids": []
+  },
+  "packet_sha256": "5ef3b6fd84c6bb89cbe5f9e093b12782fb3c2ca53c06f03cb594c88ffb41e54d"
+}

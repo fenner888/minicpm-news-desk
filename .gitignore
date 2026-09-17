@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.env
+.env.*
+*.key
+outputs/
+config.local.json
+*.html
+!tests/fixtures/*.html
+
+# Bundled fictional examples are intentionally shareable.
+!samples/**/index.html

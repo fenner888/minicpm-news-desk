@@ -1,0 +1,10 @@
+{
+  "source": "synthetic",
+  "url": null,
+  "title": "SYNTHETIC — Cedar source-detail demo",
+  "body": "This is fictional evaluation data, not a real release.\nCedar converts a change list into a review checklist.\nIt is available only to invited U.S. teams with administrator approval.\nIt costs $0.20 per completed checklist; larger-team pricing is unannounced.\nEach session is limited to five checklists. A person must review the result; it cannot merge code.",
+  "source_sha256": "7891e4336a4b8726ba4660eb175ec8d2aa296dac9f97414f61d41e6865ef3673",
+  "contract": "newsdesk-passages-v1",
+  "published": null,
+  "first_seen": null
+}

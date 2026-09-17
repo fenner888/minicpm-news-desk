@@ -1,0 +1,7 @@
+{
+  "endpoint": "http://127.0.0.1:8093",
+  "model": "MiniCPM5-2B-Q4_K_M",
+  "api_key_env": "MINICPM_API_KEY",
+  "context_tokens": 8192,
+  "max_tokens": 4096
+}
