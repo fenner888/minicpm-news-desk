@@ -3,6 +3,10 @@ __pycache__/
 .env
 .env.*
 *.key
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
 outputs/
 config.local.json
 *.html

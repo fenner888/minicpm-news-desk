@@ -8,15 +8,17 @@ from . import core as c
 
 CONTRACT = 'newsdesk-highlights-v2'
 POLICY = {
-    'version': 'protected-blocks-v2-highlights',
+    'version': 'protected-blocks-v3-definitions',
     'rules': {
         'price': r'[$€£]\s*\d|\b(?:prices?|pricing|costs?|credits?|billing|subscriptions?|free)\b',
         'access_limits': r'\b(?:available|availability|only|invited?|preview|approval|eligible|rollout|rolling out|markets?|US-based|international|opt[ -]?in(?:to)?|if enabled|limited|limits?|requires?|cannot|must|not yet|not supported|select advertisers|being tested)\b',
         'setup_scope': r'/(?:new|memory|dream)\b|\b(?:first completed turn|after (?:a|the) turn|new sessions|current conversation|per project|global set)\b',
         'separation': r'\b(?:clearly labeled|independent answers|separate from|distinct from)\b',
         'exclusions': r'\b(?:excluded?|left out|does not|do not|will not)\b',
+        'definitions': r'\b(?:at least|at most|up to|means|defined as|counts?|counted|denominator|numerator|omitted|absent|null|not measured|rolling \d+[ -]day)\b',
+        'effective_dates': r'\b(?:on|from|by|starting|beginning|until|after|before)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\b',
     },
-    'sections': ['availability','pricing','limitations','restrictions','new commands','getting started','access','requirements'],
+    'sections': ['availability','pricing','limitations','restrictions','new commands','getting started','access','requirements','important notes','new secure defaults'],
     'pool': 'lead4_plus_first3_practical_use_blocks',
     'context': r'^(?:It\b|This\b|That\b|They\b|These\b|The app\b)',
     'injection': r'ignore (?:all |previous |the )?(?:instructions|task)|reveal (?:the |your )?(?:credentials|secrets)|<\|(?:system|im_start)\|>|\[INST\]',
@@ -94,7 +96,7 @@ def prepare(article):
         previous=block
     protected=[dict(b,rules=sorted(set(reasons[b['id']]))) for b in all_blocks if b['id'] in reasons]
     pool=candidates[:4]
-    extra=[b for b in candidates[4:] if re.search(r'\b(?:can|helps?|enables?|lets?|useful)\b',b['text'],re.I)][:3]
+    extra=[b for b in candidates[4:] if re.search(r'\b(?:can|helps?|enables?|lets?|useful|able to)\b',b['text'],re.I)][:3]
     pool+=extra
     if len(protected)>limits['protected_blocks'] or sum(len(b['text']) for b in protected)>limits['protected_chars']:held.append('protected_detail_budget_exceeded')
     if len(pool)>limits['pool_blocks'] or sum(len(b['text']) for b in pool)>limits['pool_chars']:held.append('selector_pool_budget_exceeded')

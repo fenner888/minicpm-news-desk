@@ -1,4 +1,4 @@
-# OpenBMB follow-up draft — not sent
+# OpenBMB follow-up draft — not sent (updated September18)
 
 Thanks for encouraging me to polish the project. I now have a portable,
 MIT-licensed research preview of MiniCPM News Desk ready for review.
@@ -9,17 +9,27 @@ CPU-only Linux desktop and selects source passages explaining what changed and
 how it can be used. The report retains source links and relevant access, pricing
 and setup conditions so readers can dig deeper.
 
-The code now includes 110 offline tests, a no-model quick start and clearly labeled
-normal/fallback examples. I also ran the actual guarded CLI on the Linux machine
-with three fresh model requests: all three passed source-based content review,
-including two repetitions of a case that previously returned no highlights.
-Each took about 59–61 seconds including setup and cleanup. Local provider API cost
-was $0; I am not claiming measured total cost savings.
+The project now centers on one daily recap of the previous24 hours: a lead story,
+other updates worth knowing, and source-linked quick hits. Collection can run
+hourly without hourly MiniCPM notifications. Dates, deduplication, budgets and
+delivery receipts are deterministic code; the model selects grounded passages.
+
+The public package includes147 offline tests and a fictional no-model daily demo.
+The separate private integration passes217 tests in total. Three saved real-model
+results were replayed into a three-part Telegram preview; this presentation test
+made no new model calls. The first scheduled daily delivery is still pending.
+
+Earlier on September18, three real GitHub article tests each produced useful
+local selections in roughly40–43 seconds including setup/checks/cleanup. Those
+are development observations, not a general accuracy estimate. Local provider
+API cost was $0; I am not claiming measured total cost savings.
 
 I have kept the limitations visible. An earlier eight-request run passed7/8
 content checks. If the model selects nothing, the application shows the full
 original source with a fallback label rather than pretending it generated a good
-summary. This is still a review-required prototype, not an unattended news service.
+summary. This is still a review-required research preview. The owner-authorized
+private daily integration is separate from the portable public package, and its
+ongoing usefulness and delivery reliability still need observation.
 
 I started with my own AI/tech workflow. The approach could be adapted to other
 topics, but those have not been evaluated yet. The package includes the measured

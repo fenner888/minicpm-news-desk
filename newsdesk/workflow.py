@@ -88,22 +88,27 @@ def snapshot_report(data,out):
 
 
 def article_report(sid,url,out,raw=None,get=fetch,metadata=None):
-    from .core import article_url
+    from .core import article_url, retrieval_url
     sid=article_url(sid,url)
     if metadata is not None:
         metadata=normalize_snapshot({'version':1,'items':[metadata]})[0]
         if metadata['source']!=sid or metadata['url'].rstrip('/')!=url.rstrip('/'):
             raise ValueError('snapshot_article_identity_mismatch')
     out,manifest=begin(out,'saved_html_import' if raw is not None else 'public_article_fetch')
-    manifest.update(source=sid,url=url)
+    manifest.update(source=sid,url=url,retrieval_url=retrieval_url(sid,url))
     try:
         if raw is None:
             manifest['fetch_attempts']=1; save(out/'manifest.json',manifest)
             raw=get(sid,url)
         article=extract(sid,url,raw)
+        article['retrieval_url']=retrieval_url(sid,url) if raw is not None and manifest['mode']=='public_article_fetch' else None
         if metadata is not None:
             article.update(published=metadata['published'],first_seen=metadata['first_seen'])
             article['date_provenance']='supplied collector snapshot; not inferred from fetch time'
+            from .core import SOURCES
+            if article['title']==SOURCES[sid][0]+' article':
+                article['title']=metadata['title']
+                article['title_provenance']='URL-bound collector headline; HTML heading was ambiguous'
         article['provenance']='operator-supplied HTML, origin not authenticated' if manifest['mode']=='saved_html_import' else 'direct HTTPS retrieval with host/IP/TLS validation'
         article['status']='source_only_no_model'
         save(out/'article.json',article)

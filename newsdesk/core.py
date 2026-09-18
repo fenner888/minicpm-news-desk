@@ -70,6 +70,14 @@ def article_url(sid, url):
     return sid
 
 
+def retrieval_url(sid, url):
+    """GitHub's observed canonical slash, never a server-chosen redirect."""
+    sid = article_url(sid, url)
+    target = url + '/' if sid == 'github' and not url.endswith('/') else url
+    article_url(sid, target)
+    return target
+
+
 def timestamp(value):
     if value is not None and (type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 4102444800):
         raise ValueError('invalid_timestamp')

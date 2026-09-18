@@ -12,7 +12,7 @@ import sys
 import time
 import urllib.request
 from urllib.parse import urlsplit
-from .core import SOURCES, article_url, loads, text
+from .core import SOURCES, article_url, retrieval_url, loads, text
 
 MAX_HTML = 2_000_000
 
@@ -26,6 +26,7 @@ def public_addresses(host, resolver=socket.getaddrinfo):
 
 def fetch_direct(sid, url):
     sid = article_url(sid, url)
+    url = retrieval_url(sid, url)
     host = SOURCES[sid][1]; address = public_addresses(host)[0]
     start = time.monotonic()
     context = ssl.create_default_context()
@@ -34,9 +35,11 @@ def fetch_direct(sid, url):
     try:
         connection.sock = context.wrap_socket(raw_socket,server_hostname=host)
         connection.request('GET', urlsplit(url).path, headers={
-            'User-Agent':'MiniCPM-News-Desk/0.4 source review',
+            'User-Agent':'MiniCPM-News-Desk/0.6.2 source review',
             'Accept':'text/html', 'Accept-Encoding':'identity'})
         response = connection.getresponse()
+        if response.status == 403 and response.getheader('cf-mitigated') == 'challenge':
+            raise ValueError('http_status_403_challenge')
         if response.status != 200:
             raise ValueError('http_status_' + str(response.status))
         if response.getheader('Content-Encoding','identity') not in ('identity',''):

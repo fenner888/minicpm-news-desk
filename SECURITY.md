@@ -34,6 +34,14 @@ keep them private unless separately reviewed for redistribution rights.
 
 ## Operational limits
 
+The daily module adds a local SQLite archive and receipt ledger. Intake must come
+from a source/host-validated collector. Model and article content cannot select
+the recipient. The integration must hold an exclusive lock, use restrictive OS
+permissions, enforce fetch limits, validate final platform formatting size and
+keep secrets outside source records. Prepared, reserved and confirmed delivery
+are distinct; uncertain sends stay held. See DIGEST.md for the integration
+contract and responsibilities that the portable library cannot enforce itself.
+
 No scheduler, notifications or production model-server manager is included.
 The package cannot establish that your own server is configured securely. Keep
 the server authenticated and loopback-only, review resource use, and stop on
@@ -41,7 +49,7 @@ preflight or cleanup failure. The original test lifecycle is private infrastruct
 and is not required for the offline demo.
 
 The legacy free-prose workflow functions remain for regression compatibility;
-the v0.6.1 CLI uses the ID selector. Their presence is disclosed, not presented
+the article CLI uses the ID selector. Their presence is disclosed, not presented
 as new model functionality. No remote package installation or external scanner
 was used for this standard-library candidate.
 

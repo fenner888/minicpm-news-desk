@@ -1,10 +1,41 @@
-# Evaluation — 0.6.1 research preview
+# Evaluation — 0.7.0 daily recap preview
+
+## September18 daily recap update
+
+Owner approved the daily24-hour recap and public repository update. The public
+standard-library suite passes147/147; the separate private integration suite
+passes217/217 including those147. These counts are not additive. New cases cover
+24-hour boundaries, stale/future dates, late discoveries, revisions, URL/title
+deduplication, DST, backlog disclosure, safe formatting, ambiguous sends and
+confirmation-before-consumption. No new model generation was needed for the
+recap assembly: three saved real GitHub results were replayed with exact source
+passages/conditions retained. A three-part private Telegram preview was delivered.
+First scheduled daily delivery remains a separate pending observation.
+
+Earlier September18 qualification: three real local MiniCPM calls took41.93,
+40.36 and42.52 seconds (2768 total tokens). All three passed structure, source
+comparison and runtime cleanup for a limited private pilot. All were GitHub
+articles, development cases—not an untouched holdout or cross-source accuracy
+claim. No hosted API cost; electricity and human review costs were not measured.
+
+Presentation remains extractive, not fluent free-form newsletter writing.
+Some preserved source transitions can be awkward; word targets are soft to avoid
+cutting qualifiers. Unsupported/blocked vendors get source links. The ranking
+heuristic does not establish objective importance. No breaking alerts.
+
+The current protection policy adds thresholds/count definitions, effective dates
+and important-note sections. The policy hash in the historical section below
+belongs to v0.6.1 and is not the current runtime policy. Current packets bind
+their own policy/source hashes. Previous failed runs remain valid evidence.
+
+## Historical v0.6.1 record
 
 Run date: September 17, 2026. Owner: Mark Fenner. Decision: owner approved public
 source publication as an experimental local package on September 17, 2026.
 This approval does not establish unattended production reliability. A separate
-private three-hour delivery pilot is scheduled; its results are not included in
-the measurements below and are not claimed as completed acceptance evidence.
+private three-hour delivery pilot was scheduled at that checkpoint; its results
+are not included in the historical measurements below. Subsequent checks showed
+all three messages delivered but zero model calls; this was not inference proof.
 
 ## Measurements kept separate
 

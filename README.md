@@ -1,11 +1,48 @@
-# MiniCPM News Desk — 0.6.1 research preview
+# MiniCPM News Desk — 0.7.0 daily recap preview
 
 An experimental local-first news reader powered by MiniCPM5-2B and ordinary
 Python. It helps an operator review official announcements with source-linked
 passages and explicit access, pricing and setup conditions.
 
-**Experimental public research preview. Review required. No automatic delivery.**
+**Experimental public research preview. Review required.** The portable package
+does not connect a Telegram account or install a schedule. A separate private
+integration runs the daily workflow; bring your own collector and delivery adapter.
 Project code is MIT licensed; see LICENSE. Model/runtime licenses remain separate.
+
+## One daily recap, not another hourly feed
+
+The target is an approachable morning reading experience: a lead story, a few
+updates worth knowing, and smaller quick hits, all linked to original sources.
+
+- Deliver around **8 AM America/New_York**; exactly the preceding **24 hours**.
+- Collect independently throughout the day. No hourly MiniCPM messages or
+  breaking-news alerts.
+- Use source publication dates when available; otherwise label discovery time.
+  Older articles are not recycled as fresh news. Listing revisions are updates.
+- Up to one lead, three additional detailed stories and five source-link hits.
+- Deduplicate canonical URLs and same-source identical headline/day events.
+  This is deterministic editorial ranking, not comprehensive semantic clustering.
+- Preserve material conditions. Word counts are soft targets, not truncation
+  rules. Long editions split at paragraph boundaries into numbered messages.
+- Keep overflow in a local archive; include it later only while it still meets
+  the 24-hour window. Display the omitted count.
+
+MiniCPM selects **exact source passages**, rather than generating free-form
+newsletter prose. Availability, pricing, scope and definitions are independently
+retained. The result is intentionally more conservative, and sometimes longer,
+than a professionally edited newsletter. No affiliation with Morning Brew.
+
+Try the fictional daily layout without a model or network:
+
+```sh
+python3.14 -m newsdesk.digest demo --out outputs/daily-demo-1
+```
+
+Open the generated part-1.md (additional parts are numbered). All content is
+fictional and hand-authored; the manifest records zero model calls. A shareable
+example is in [samples/daily-recap](samples/daily-recap).
+
+Read [DIGEST.md](DIGEST.md) for the queue, time-window and integration contract.
 
 ## Quick start — no model required
 
@@ -54,8 +91,9 @@ python3.14 -m newsdesk prepare --article outputs/article-1/article.json \
 
 Article retrieval is an explicit network operation. Supported main-body adapters
 cover xAI /news/, OpenAI /index/ and GitHub /changelog/. Individual pages can fail.
-OpenAI direct retrieval failed with HTTP403 on one tested Mac and succeeded on
-one Linux host; there is no automatic alternative transport.
+OpenAI retrieval has returned HTTP403/challenge on both tested hosts, including
+the latest private check. No challenge bypass or automatic alternate transport
+is implemented. Blocked/unsupported sources stay clearly labeled links.
 
 Article also accepts --html path.html for an operator-saved document and
 --snapshot snapshot.json for exactly matched discovery metadata. Imported HTML
@@ -70,6 +108,8 @@ An existing collector can supply --input to the snapshot command. Snapshot JSON:
 Dates are Unix seconds or null. Unknown release dates stay unknown. Snapshots
 are excerpt baselines, not full-article summaries. This package does not bundle
 the original private collector, scheduler, SSH access or Telegram integration.
+The new digest module supplies the portable archive, selection and delivery-state
+primitives for an integrator; it does not infer that a prepared message was sent.
 
 ## Optional local model selection
 
@@ -101,8 +141,8 @@ apply-selection can validate a saved response offline with --article, --config,
 
 ## Deliberate limits
 
-- Every output requires meaning review. Longer reports preserve context but can
-  repeat facts; they are not polished automated newsletters.
+- Every output requires meaning review. The daily layout is implemented, but
+  extractive wording may repeat context or preserve awkward source transitions.
 - Overview candidates are the first four eligible blocks plus up to three later
   practical-use blocks. Excluded counts are disclosed; full text stays available.
 - Budgets: 7,000 source characters, 120 blocks, 2,000 per block; protected text
@@ -111,7 +151,8 @@ apply-selection can validate a saved response offline with --article, --config,
 - English heading/demo heuristics can miss context. Known instruction-like
   patterns hold the item but are not comprehensive injection detection.
 - No matching price passage does not mean free, unrestricted or unannounced.
-- No accounts, public API, UI dashboard, automatic publishing or delivery.
+- No accounts, public API, UI dashboard or built-in messaging credentials. The
+  digest engine is local; live scheduling/delivery remain integration concerns.
 - Legacy free-prose library functions remain for regression compatibility; the
   CLI uses the ID-only selector. Read SECURITY.md for the trust boundaries.
 
@@ -122,10 +163,15 @@ tests are not model accuracy. No matched cloud-cost comparison or general
 reliability claim is made. API charges for local tests were zero; hardware,
 electricity and review time are not zero-cost or measured savings.
 
-Latest evidence: 110 offline tests; the earlier repair produced 7/8 semantic passes,
+Historical selector evidence: 110 offline tests; the earlier repair produced 7/8 semantic passes,
 followed by 8/8 offline saved-response handling checks. A separate fresh Linux CLI
 smoke test passed 3/3, including two repeats of the previous abstention case. Those
 are separate measurements, not one combined accuracy score.
+
+The v0.7 digest adds rolling-window, DST, deduplication, archive, bounded selection,
+numbered delivery and failure-reconciliation tests. Saved real model results were
+replayed for presentation; they are not new model generations. See EVALUATION.md
+for current counts and the distinction between public code and private delivery.
 
 Source/model archives and credentials are excluded. Synthetic fixtures are
 project-authored. Model weights, runtime binaries, third-party articles, images

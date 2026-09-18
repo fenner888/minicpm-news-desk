@@ -4,6 +4,24 @@ This release does not enable an unattended service. Review one item at a time
 before sharing it. Keep extraction, model selection, reader acceptance and
 delivery as separate decisions.
 
+## Daily recap integration
+
+The intended cadence is one08:00 America/New_York recap of the preceding24 hours.
+Collection can run hourly without hourly digest notifications. No breaking-alert
+stream. See DIGEST.md for the durable state machine and delivery adapter contract.
+
+The private reference integration is separate from this portable repository.
+It reuses an existing collector, caps each edition at4 local attempts/6 fetches,
+uses the existing approved Telegram destination and preserves the original radar.
+The repository does not install its schedule or distribute its machine configuration.
+
+Observe first scheduled delivery separately from a preview send. Review source
+failures, the number of full-source cards versus links, overflow, date coverage
+and reading quality. Empty/blocked intervals are not model successes. Pause only
+the digest integration for rollback; preserve archive and delivery receipts.
+Never automatically retry an ambiguous send. Reconcile complete confirmed parts
+without resending; unresolved preparation/partial delivery requires operator review.
+
 ## Review checklist
 
 1. Does the title/link identify the actual original source?
