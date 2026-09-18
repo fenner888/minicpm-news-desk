@@ -160,8 +160,12 @@ class Digest(unittest.TestCase):
         self.assertIn('Morning edition*',out)
         self.assertIn('**⚡ Quick hits**',out)
         item=e['items'][0]
-        detailed=' '.join(d.render(e,{item['id']:{'url':item['url'],'highlights':['Verified passage.'],'conditions':[]}}))
-        self.assertIn('**The lead story**',detailed)
+        detailed=' '.join(d.render(e,{item['id']:{'url':item['url'],'highlights':['Verified passage.'],'conditions':['Only invited teams.']}}))
+        self.assertIn('**📰 The lead story**',detailed)
+        self.assertIn('**🔹 ',detailed)
+        self.assertIn('**📝 Conditions to know**',detailed)
+        self.assertIn('• Only invited teams.',detailed)
+        self.assertIn('🔗 '+item['url'],out)
 
     def test_part_splitting_preserves_paragraphs(self):
         paragraphs=['Words '*100 for _ in range(8)];parts=d.split_parts(paragraphs)

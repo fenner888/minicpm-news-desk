@@ -264,14 +264,14 @@ def render(edition,cards,failures=None,coverage=None,preview=False):
     for index,item in enumerate(detailed):
         card=cards[item['id']]
         if url(card['url'])!=item['url']:raise ValueError('card_identity_mismatch')
-        if index==0:blocks.append('**The lead story**')
+        if index==0:blocks.append('**📰 The lead story**')
         elif index==1:blocks.append('**🗞 Worth knowing**')
-        blocks.append('**'+clean(item['title'])+'**')
+        blocks.append('**🔹 '+clean(item['title'])+'**')
         if item.get('changed_observed_at'):blocks.append('Updated listing — not necessarily a new release.')
         if item['published'] is None:blocks.append('Publication date unavailable; included by discovery time.')
         blocks += [clean(p) for p in card['highlights']]
         if card['conditions']:
-            blocks.append('**Conditions to know**')
+            blocks.append('**📝 Conditions to know**')
             blocks += ['• '+clean(p) for p in card['conditions']]
         blocks.append('🔗 '+item['url'])
     if quick:
@@ -280,7 +280,7 @@ def render(edition,cards,failures=None,coverage=None,preview=False):
             reason=failures.get(item['id'],'Headline only; full-article brief not generated.')
             if item.get('changed_observed_at'):reason='Updated listing. '+reason
             if item['published'] is None:reason+=' Publication date unknown; discovered in this window.'
-            blocks.append('**'+clean(item['title'])+'**\n'+clean(reason)+'\n'+item['url'])
+            blocks.append('**🔹 '+clean(item['title'])+'**\n'+clean(reason)+'\n🔗 '+item['url'])
     if not items:blocks.append('No eligible new items were found in the preceding 24 hours. This does not prove no news occurred.')
     if edition.get('overflow'):blocks.append(f"{edition['overflow']} additional eligible items are retained in the archive. They were not included in this recap; older items will not be recycled as new news.")
     if coverage:
