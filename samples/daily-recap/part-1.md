@@ -2,7 +2,7 @@
 
 **SYNTHETIC DEMO — fictional, hand-authored; zero model calls**
 
-Prepared Sep 18, 10:10 AM EDT
+Prepared Sep 18, 10:30 AM EDT
 
 Historical source window: Sep 17, 08:00 AM EDT → Sep 18, 08:00 AM EDT
 
@@ -44,10 +44,12 @@ This is fictional demonstration text, not a real announcement or model result. T
 
 **⚡ Quick hits**
 
-*Source headlines and links; full-article briefs are not included in this section.*
+*Publisher excerpts where available; full-article briefs are not included in this section.*
 
 **Fictional Elm updates its editor**
+This fictional update adds an export button for saved project notes.
 [Read the source ↗](https://example.com/fictional/4)
 
 **Fictional Ash publishes a tutorial**
+This fictional update adds an export button for saved project notes.
 [Read the source ↗](https://example.com/fictional/5)

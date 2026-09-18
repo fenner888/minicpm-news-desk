@@ -27,7 +27,12 @@ def public_addresses(host, resolver=socket.getaddrinfo):
 def fetch_direct(sid, url):
     sid = article_url(sid, url)
     url = retrieval_url(sid, url)
-    host = SOURCES[sid][1]; address = public_addresses(host)[0]
+    return _public_html(url, SOURCES[sid][1])
+
+
+def _public_html(url, host):
+    """Internal transport; callers must enforce their fixed host/path contract."""
+    address = public_addresses(host)[0]
     start = time.monotonic()
     context = ssl.create_default_context()
     connection = http.client.HTTPSConnection(host, timeout=15, context=context)

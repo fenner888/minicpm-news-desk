@@ -1,4 +1,25 @@
-# Evaluation — 0.7.2 daily recap preview
+# Evaluation — 0.7.3 daily recap preview
+
+## September 18 quick-hit context
+
+188 public plus 74 private tests pass (262 total). Regression cases cover fixed
+source/host/path checks, metadata ambiguity/truncation, hostile markup, preserved
+conditions, source identity, shared six-fetch reservation, missing budgets, stale
+sources, short one-part and longer lossless multi-part editions. Network and child
+process launches were blocked in the offline suite.
+
+The same nine-item development edition was replayed with its two saved model cards.
+Two quick-hit descriptions came from complete feed sentences; four bounded official
+metadata requests yielded two more usable descriptions. Thus four of seven quick
+hits gained context; three remained honest headline-only links. Two full-source
+fetches from the original edition plus four metadata requests used its six-fetch
+allowance. No new model calls, hosted requests, sends or daily-archive changes.
+The preview uses two parts (2,771 and 2,247 formatted UTF-16 units). A single part
+would exceed the delivery adapter's safe limit; no text was dropped to force it.
+
+This is source-extractive presentation evidence, not seven full-article summaries,
+a new model evaluation, independent verification of publisher claims or a holdout.
+The underlying model, prompt, daily schedule and original collector are unchanged.
 
 ## September 18 current-data polish test
 

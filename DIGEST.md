@@ -15,8 +15,8 @@ No filler, forced jokes or invented practical value. A quiet day can have fewer
 stories; the format never requires padding.
 
 One lead plus up to three “Worth knowing” stories use verified full-source cards.
-Remaining selected discoveries appear as explicitly labeled quick-hit links.
-Unavailable sources are never summarized from a short feed excerpt. No forced
+Remaining selected discoveries appear as explicitly labeled publisher excerpts
+and links where available. Excerpts are not full-article/model summaries. No forced
 “Something to try” section or invented practical benefit.
 
 Ranking is transparent: title keywords for security/privacy, launches/models and
@@ -59,6 +59,30 @@ labels an isolated current-data test, distinct from `preview=True` saved replays
 The two modes cannot be combined. Neither flag authorizes fetching or sending.
 Quick hits share a source-only disclosure and stay grouped where they fit;
 per-item date uncertainty and failures are still visible.
+
+### Quick-hit context in 0.7.3
+
+The optional `descriptions` mapping in `render` adds short publisher text, bound
+to each item's source and canonical URL. `newsdesk.quickhits.collect` uses complete
+feed sentences first; missing descriptions can be fetched from fixed official
+AWS, Google, Vercel, LangChain and LM Studio hosts. These are HTML page descriptions,
+not new full-body adapters. No model writes prose or invents practical benefits.
+Complete caveats in an accepted excerpt remain; a truncated trailing feed fragment
+is never completed. Incomplete, conflicting, generic or oversized page descriptions
+are held. These conservative checks can reject useful publisher metadata.
+
+Keep the source description/provenance/hash record privately. An absent description
+remains an explicitly labeled headline. Existing source/model failure notices take
+precedence. The operator shares its six-fetch daily allowance between full articles
+and metadata requests, reserving each attempt before networking; no retry or extra
+inference. `collect` takes the remaining fetch budget; it does not manage the
+operator's durable reservation ledger. The sample integration above does not fetch
+metadata unless the caller explicitly adds this step.
+
+Individual quick hits stay intact while packing, avoiding unnecessary section-wide
+page breaks. One message is preferred when the whole edition fits the existing safe
+limit; content is never cut solely to force a single message. The latest nine-item
+replay still needs two messages. Source text remains untrusted and inert.
 
 ## Integration example
 

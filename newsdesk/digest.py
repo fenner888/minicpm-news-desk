@@ -19,7 +19,7 @@ import uuid
 from zoneinfo import ZoneInfo
 from . import facts as f, workflow as w
 
-VERSION='0.7.2'
+VERSION='0.7.3'
 ZONE=ZoneInfo('America/New_York')
 MAX_STORIES=9
 MAX_DETAILED=4
@@ -343,9 +343,9 @@ def story_blocks(paragraphs,title):
     return result
 
 
-def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None,live_test=False):
+def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None,live_test=False,descriptions=None):
     if preview and live_test:raise ValueError('ambiguous_preview_origin')
-    items=edition['items'];failures=failures or {};start=edition['cutoff']-86400
+    items=edition['items'];failures=failures or {};descriptions=descriptions or {};start=edition['cutoff']-86400
     def date(t):return datetime.fromtimestamp(t,ZONE).strftime('%b %d, %I:%M %p %Z')
     views={key:reading_card(card) for key,card in cards.items()}
     detailed=[i for i in items if i['id'] in views and not views[i['id']]['held']][:MAX_DETAILED]
@@ -378,14 +378,26 @@ def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=
         story.append(source_link(item['url']))
         blocks.extend(story_blocks(story,item['title']))
     if quick:
-        quick_blocks=['**⚡ Quick hits**','*Source headlines and links; full-article briefs are not included in this section.*']
-        for item in quick:
+        notice='*Publisher excerpts where available; full-article briefs are not included in this section.*'
+        for index,item in enumerate(quick):
             reason=failures.get(item['id'],'')
             if item['id'] in views and views[item['id']]['held']:reason='Brief held: selected text needs more context. Read the original source.'
+            description=descriptions.get(item['id'])
+            detail=''
+            if description and not reason and item['id'] not in views:
+                from .quickhits import excerpt
+                if url(description['url'])!=item['url'] or description['source']!=item['source']:raise ValueError('description_identity')
+                raw=description.get('text','')
+                if raw!=excerpt(raw,item['title']):raise ValueError('description_invalid')
+                detail=clean(raw)
+            if not detail and not reason:reason='Headline only; source detail unavailable.'
             if item.get('changed_observed_at'):reason='Updated listing. '+reason
             if item['published'] is None:reason+=' Publication date unknown; discovered in this window.'
-            quick_blocks.append('**'+clean(item['title'])+'**\n'+(clean(reason)+'\n' if reason.strip() else '')+source_link(item['url']))
-        blocks.extend(story_blocks(quick_blocks,'Quick hits — source links'))
+            hit='**'+clean(item['title'])+'**\n'+(detail+'\n' if detail else '')+(clean(reason)+'\n' if reason.strip() else '')+source_link(item['url'])
+            # Pack individual intact hits instead of moving the whole section to
+            # a new part. A section heading is never detached from its first hit.
+            if index==0:hit='**⚡ Quick hits**\n\n'+notice+'\n\n'+hit
+            blocks.extend(story_blocks([hit],'Quick hits'))
     if not items:blocks.append('No eligible new items were found in the preceding 24 hours. This does not prove no news occurred.')
     if edition.get('overflow'):blocks.append(f"{edition['overflow']} additional eligible items are retained in the archive. They were not included in this recap; older items will not be recycled as new news.")
     if coverage:
@@ -402,7 +414,7 @@ def demo(out):
     until=datetime(2026,9,18,8,tzinfo=ZONE).timestamp()
     store=Store(out/'demo.sqlite3')
     items=[{'source':f'fictional-{i}','company':title.split()[1]+' (fictional)','title':title,
-            'url':f'https://example.com/fictional/{i}','excerpt':'Fictional evaluation data.',
+            'url':f'https://example.com/fictional/{i}','excerpt':'This fictional update adds an export button for saved project notes.',
             'published':until-3600-i,'first_seen':until-3600-i} for i,title in enumerate([
                 'Fictional Cedar launches a review checklist tool','Fictional Birch API adds local exports',
                 'Fictional Pine fixes a configuration error','Fictional Maple publishes documentation',
@@ -412,7 +424,9 @@ def demo(out):
     for item in edition['items'][:4]:
         cards[item['id']]={'url':item['url'],'highlights':['This is fictional demonstration text, not a real announcement or model result.','Teams can turn a change list into a checklist for human review.'],
             'conditions':['Available only to invited teams. A person must approve the result.']}
-    parts=render(edition,cards,preview=True)
+    from .quickhits import collect
+    descriptions,_=collect(edition['items'],cards,{},0)
+    parts=render(edition,cards,preview=True,descriptions=descriptions)
     parts=[p.replace('**PREVIEW — saved results; not a new model run**','**SYNTHETIC DEMO — fictional, hand-authored; zero model calls**') for p in parts]
     for i,part in enumerate(parts,1):w.atomic(out/f'part-{i}.md',part)
     w.atomic(out/'supporting-report.html',supporting_report(edition,cards))
