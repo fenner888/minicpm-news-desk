@@ -2,6 +2,8 @@
   "status": "owner-approved public MIT research preview; not unattended production",
   "files": [
     "README.md",
+    "AGENTS.md",
+    "CHANGELOG.md",
     "DIGEST.md",
     ".gitignore",
     "config.example.json",

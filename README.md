@@ -1,4 +1,4 @@
-# MiniCPM News Desk — 0.7.4 daily recap preview
+# MiniCPM News Desk — 0.7.5 daily recap preview
 
 An experimental local-first news reader powered by MiniCPM5-2B and ordinary
 Python. It helps an operator review official announcements with source-linked
@@ -8,6 +8,27 @@ passages and explicit access, pricing and setup conditions.
 does not connect a Telegram account or install a schedule. A separate private
 integration runs the daily workflow; bring your own collector and delivery adapter.
 Project code is MIT licensed; see LICENSE. Model/runtime licenses remain separate.
+
+The original personal setup uses an Intel Core i5-9400F Linux desktop with 16 GB
+RAM and CPU-only MiniCPM inference. An existing private collector checks official
+sources hourly; the private integration is configured to send one Telegram recap
+of the previous 24 hours. This repository shares the reusable briefing logic,
+not the owner's collector, Telegram account or machine-specific configuration.
+That distinction also applies to screenshots of the actual Telegram test output.
+
+## Current evidence
+
+- **Public package 0.7.5:** 203 offline tests; includes a conservative fix for
+  qualified passages being mistaken for navigation or background text.
+- **Latest real-model delivery test, on 0.7.4:** one fresh local MiniCPM brief
+  plus eight source-only items, delivered as two confirmed Telegram messages.
+  The local request took 40.57 seconds. The test required recovery from an
+  operator working-directory error; it was not a clean unattended run.
+- The public 0.7.5 formatter has **not** been deployed or live-model tested.
+  The first scheduled morning delivery remains unobserved as of September 18.
+
+See [EVALUATION.md](EVALUATION.md) for evidence and limitations, and
+[CHANGELOG.md](CHANGELOG.md) for the differences between versions.
 
 ## One daily recap, not another hourly feed
 
@@ -51,6 +72,10 @@ Read [DIGEST.md](DIGEST.md) for the queue, time-window and integration contract.
 ## Quick start — no model required
 
 Tested with Python 3.14.7; standard library only. No pip or npm installation.
+Use a Python build with IANA timezone data available: the daily formatter needs
+`America/New_York`. Other Python versions/platforms have not been qualified.
+If `python3.14` is not your executable name, use the path to your Python 3.14
+installation rather than assuming the system `python3` is the tested version.
 
 ```sh
 git clone https://github.com/fenner888/minicpm-news-desk.git
@@ -60,7 +85,10 @@ python3.14 -m unittest discover -s tests -v
 ```
 
 Open outputs/demo-1/index.html. The example is synthetic, uses hand-selected IDs,
-and performs zero inference. Each command requires a new output directory.
+and performs zero inference. Commands that write reports require a new output
+directory. Run all module commands from the cloned repository root, including
+when configuring an external job: subprocess workers must be able to import
+`newsdesk`. An import-path failure is not a model or source-provider failure.
 
 ## How it works
 

@@ -9,6 +9,10 @@ __pycache__/
 *.db-*
 outputs/
 config.local.json
+*.pem
+*.p12
+*.pfx
+.DS_Store
 *.html
 !tests/fixtures/*.html
 

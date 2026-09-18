@@ -76,13 +76,14 @@ remains an explicitly labeled headline. Existing source/model failure notices ta
 precedence. The operator shares its six-fetch daily allowance between full articles
 and metadata requests, reserving each attempt before networking; no retry or extra
 inference. `collect` takes the remaining fetch budget; it does not manage the
-operator's durable reservation ledger. The sample integration above does not fetch
+operator's durable reservation ledger. The sample integration below does not fetch
 metadata unless the caller explicitly adds this step.
 
 Individual quick hits stay intact while packing, avoiding unnecessary section-wide
 page breaks. One message is preferred when the whole edition fits the existing safe
 limit; content is never cut solely to force a single message. The latest nine-item
-replay still needs two messages. Source text remains untrusted and inert.
+replay used two messages; later detailed editions have needed three. Source text
+remains untrusted and inert.
 
 ### Date preservation repair in 0.7.4
 
@@ -96,6 +97,21 @@ These are heuristics, not a guarantee of complete fact recall across every sourc
 The model, prompt and inference settings are unchanged. Old packets/selection
 hashes are not compatible with the new policy; regenerate packets and keep old
 artifacts as historical evidence rather than silently rewriting them.
+
+### Qualification retention in 0.7.5
+
+Reading-view filtering now preserves access, price, safety, explicit dates and
+migration qualifications even when the model selected them as highlights beginning
+with navigation text or an API-field label. Previously a selected block could be
+excluded from the separate conditions list and then hidden as navigation. ISO
+dates and migration guidance use the existing protected-source rules in both
+paths, and background safety warnings remain visible. Ordinary navigation still
+moves to the supporting report; incomplete restrictive passages still hold the card.
+
+This is a deterministic formatter correction, not a model/prompt/policy-hash or
+timing change. Six additional offline regression tests cover the affected paths.
+No new inference or deployment accompanies this public package update; the most
+recent delivered model output was produced on 0.7.4.
 
 ## Integration example
 
@@ -167,4 +183,7 @@ The repository includes the portable queue/formatter, model selection code,
 tests and fictional examples. It excludes private collector paths, scheduler
 jobs, Telegram destinations/tokens, SSH configuration, raw third-party articles,
 reasoning traces and the machine-specific temporary model supervisor.
-The original v0.6.1 synthetic selector samples remain historical fixtures.
+The original v0.6.1 synthetic selector samples remain historical fixtures. Their
+saved packets are not compatible with the current protection-policy hash; create
+a fresh packet from their synthetic article when exercising the current CLI.
+The bundled daily example is regenerated for the public package version.

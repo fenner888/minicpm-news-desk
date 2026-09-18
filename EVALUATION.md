@@ -1,4 +1,55 @@
-# Evaluation — 0.7.4 daily recap preview
+# Evaluation — 0.7.5 daily recap preview
+
+## September 18 public-package review (0.7.5)
+
+203 public offline tests pass. Six added tests reproduce selected navigation/API
+reference passages losing access, pricing, safety or date qualifications; ISO-date
+and migration clauses being hidden as navigation; and a background safety warning
+being removed. The earlier suite passed while these new cases failed on 0.7.4.
+The formatter now retains those qualifications, still removes plain navigation,
+and avoids duplicating a qualification already displayed. No model/prompt,
+source-selection policy, schedule or integration change is part of this release.
+
+This is offline software evidence. The private runtime remains on 0.7.4; its
+74 integration tests have not been requalified against 0.7.5. Do not add those
+historical private tests to this version's 203 public tests or present earlier
+model output as 0.7.5 live validation. See CHANGELOG.md for the release boundary.
+
+The public suite also passed with real network connections and child-process
+launches blocked. A clean 43-file copy passed all 203 tests, both no-model demos
+and preparation of the historical synthetic article under the current policy.
+Relative documentation links, export allowlist, synthetic provenance and private-
+file ignore rules passed checks. Imports are standard-library-only. A targeted
+credential/private-path scan covered the public tree and 100 historical Git blobs;
+reviewed synthetic hostile-URL fixtures were the only matches. This is a bounded
+review, not an independent security certification or exhaustive secret detector.
+
+## September 18 fresh model to Telegram (0.7.4)
+
+The final owner-requested test used the deployed private 0.7.4 pipeline and a
+current collector snapshot: 28/28 registered sources reported success, with nine
+stories selected from 21 eligible in the preceding 24 elapsed hours. Those counts
+describe discovery, not full-article/model coverage.
+
+The first manual launch used the wrong working directory. Two fetch workers could
+not import the package and failed before HTTP; no model ran. The links-only output
+was withheld. Three metadata attempts also consumed fetch budget. After correcting
+the test's working directory, only the sixth remaining fetch allowance was used
+for the affected Ubuntu migration article. The configured scheduled job already
+had the correct working directory; no cron change was made.
+
+One fresh local request completed in 40.57 seconds including runtime checks and
+cleanup (342 prompt + 525 completion = 867 tokens). Source comparison confirmed
+the migration dates, pinning alternative, supported architectures, setup labels
+and breakage warning remained visible. No model retry or hosted fallback occurred.
+The resulting one model-derived brief plus eight explicitly source-only items
+were delivered in two confirmed Telegram messages. One other failed article was
+not fetched again within the budget. Archive and schedule were unchanged.
+
+This verifies that specific repaired case through generation and delivery after
+operator recovery, not a clean unattended all-article pass or unseen holdout.
+First scheduled morning delivery is still unobserved as of September 18, 2026.
+Raw sources, model reasoning and recipient/message identifiers remain private.
 
 ## September 18 date-preservation repair
 
