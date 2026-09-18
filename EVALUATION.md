@@ -1,6 +1,27 @@
-# Evaluation — 0.7.0 daily recap preview
+# Evaluation — 0.7.1 daily recap preview
 
-## September18 daily recap update
+## September 18 editorial repair
+
+166 public tests and 71 private integration tests pass (237 total, not additive
+with earlier counts). Nineteen new public cases cover scope/price/date clauses,
+field-specific definitions, unsafe/incomplete excerpts, report escaping, preview
+dates, whole-story packing and explicit continuations. A private test asserts
+the full report is saved before delivery. No model/prompt change or new inference.
+
+Three previously reviewed real GitHub cards were replayed. Story text decreased
+from 328/378/336 words to 159/131/151 words; the edition moved from three messages
+to two while retaining source access, relevant definitions and rollout limits.
+All three complete extracted articles remain in the private report. These are
+development replays, not holdout results or broad cross-vendor accuracy evidence.
+Word targets remain soft; these examples still exceed some preferred lengths.
+The baseline failed reader-quality review despite passing delivery/software tests.
+
+Qualification selection uses English rules and can miss relationships. Unknown
+conditions are retained conservatively. Unsupported sources remain headline links.
+The fictional multi-company demo demonstrates layout, not live company coverage.
+First scheduled morning delivery still requires observation.
+
+## Earlier September18 daily recap update (0.7.0)
 
 Owner approved the daily24-hour recap and public repository update. The public
 standard-library suite passes147/147; the separate private integration suite

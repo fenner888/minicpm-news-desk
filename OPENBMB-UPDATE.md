@@ -14,10 +14,12 @@ other updates worth knowing, and source-linked quick hits. Collection can run
 hourly without hourly MiniCPM notifications. Dates, deduplication, budgets and
 delivery receipts are deterministic code; the model selects grounded passages.
 
-The public package includes147 offline tests and a fictional no-model daily demo.
-The separate private integration passes217 tests in total. Three saved real-model
-results were replayed into a three-part Telegram preview; this presentation test
-made no new model calls. The first scheduled daily delivery is still pending.
+The public package includes166 offline tests and a fictional no-model daily demo.
+The separate private integration passes237 tests in total. The editorial update
+replayed three saved real-model results into two Telegram messages, with full
+extracted articles and placement decisions retained in a private supporting report.
+This presentation test made no new model calls. The first scheduled daily delivery
+is still pending; shorter source-extractive writing still needs reader review.
 
 Earlier on September18, three real GitHub article tests each produced useful
 local selections in roughly40–43 seconds including setup/checks/cleanup. Those

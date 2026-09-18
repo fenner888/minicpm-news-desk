@@ -6,18 +6,20 @@ provide verified source cards and confirm delivery separately.
 import argparse
 from datetime import datetime, timedelta
 import hashlib
+import html
 import ipaddress
 import json
 import math
 from pathlib import Path
 import re
 import sqlite3
+import time
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 import uuid
 from zoneinfo import ZoneInfo
 from . import facts as f, workflow as w
 
-VERSION='0.7.0'
+VERSION='0.7.1'
 ZONE=ZoneInfo('America/New_York')
 MAX_STORIES=9
 MAX_DETAILED=4
@@ -231,7 +233,60 @@ def verified_card(article,packet,card):
     visible={b['id'] for b in selected}
     return {'title':article['title'],'url':article['url'],'source_sha256':article['source_sha256'],
             'highlights':[b['text'] for b in selected],
-            'conditions':[b['text'] for b in packet['protected'] if b['id'] not in visible]}
+            'conditions':[b['text'] for b in packet['protected'] if b['id'] not in visible],
+            'source_body':article['body'],'selected_ids':[b['id'] for b in selected]}
+
+
+def reading_card(card):
+    """Conservative extractive reading layer; never a semantic guarantee.
+
+    Model output is unchanged. Every moved passage remains in the report with
+    its reason. Unknown conditions stay visible; no arbitrary word-count cutoff.
+    """
+    highlights=[];conditions=[];audit=[];held=False
+    identifiers=lambda s:set(re.findall(r'\b[a-zA-Z][a-zA-Z0-9]*_[a-zA-Z0-9_]+\b',s))
+    material=re.compile(r'[$€£]\s*\d|\b(?:pricing|costs?|billed|billing|subscription|available (?:only |to |in )|invited|eligible|requires?|must|permission|does not apply|not added to|private or internal|enforc\w*|deadline|until|starting|beginning|November|December|January|February|March|April|May|June|July|August|September|October)\b',re.I)
+    navigation=re.compile(r'^(?:To get started|Visit |For (?:more|further) (?:details|information)|Learn more|Read (?:the|our) (?:docs|documentation))',re.I)
+    safety=re.compile(r'\b(?:leaks?|credentials?|exfiltrat\w*|unsafe|cannot|unless|consent|retention|not (?:available|supported)|limited to|only works|supports? only)\b',re.I)
+    for position,p in enumerate(card['highlights']):
+        reason=None
+        if p.rstrip().endswith(':'):
+            reason='incomplete_highlight';held=True
+        elif navigation.search(p):reason='navigation_not_news'
+        elif position and re.match(r'^`?[A-Za-z]\w*_\w+`?\s*:',p):reason='field_reference_not_overview'
+        if reason:audit.append({'text':p,'placement':'report','reason':reason})
+        else:highlights.append(p);audit.append({'text':p,'placement':'brief','reason':'model_selected_overview'})
+    mentioned=identifiers(' '.join(highlights))
+    for p in card['conditions']:
+        reason=None;fields=identifiers(p)
+        if p in highlights or p in conditions:reason='already_shown'
+        elif p.rstrip().endswith(':'):
+            reason='list_introduction_requires_context'
+            # A restrictive introduction cannot safely be detached from its list.
+            if re.search(r'\b(?:only|must|require\w*|except|unless|limited|cost\w*)\b',p,re.I):held=True
+        elif navigation.search(p) and not material.search(p):reason='navigation_not_news'
+        elif re.match(r'^To prepare for ',p,re.I) and not re.search(r'\d|\b(?:must|only|unless|cost|price)\b',p,re.I):reason='procedural_reference'
+        elif re.match(r'^Empty (?:arrays|fields)\b',p,re.I) and not re.search(r'\b(?:null|zero|empty|absent)\b',' '.join(highlights),re.I):reason='unmentioned_missing_value_semantics'
+        elif re.match(r'^Plugin metrics count\b',p,re.I) and not re.search(r'\b(?:counts?|totals?|invocations?|interactions?)\b',' '.join(highlights),re.I):reason='unmentioned_count_relationship'
+        elif re.match(r'^Active .+ code review means\b',p,re.I) and 'code review' not in ' '.join(highlights).lower():reason='unmentioned_feature_definition'
+        elif fields and not fields.intersection(mentioned) and not material.search(p) and not safety.search(p):reason='unmentioned_api_field_detail'
+        elif re.search(r'\b(?:previously|commonly exploited)\b',p,re.I) and not material.search(p):reason='background_context'
+        if reason:audit.append({'text':p,'placement':'report','reason':reason})
+        else:conditions.append(p);audit.append({'text':p,'placement':'brief','reason':'qualification_retained'})
+    return {'highlights':highlights,'conditions':conditions,'audit':audit,'held':held or not highlights}
+
+
+def supporting_report(edition,cards):
+    """Private full-detail artifact; escape all source content; no scripts/assets."""
+    esc=html.escape;sections=[]
+    for item in edition['items']:
+        card=cards.get(item['id'])
+        if card is None:continue
+        if url(card['url'])!=item['url']:raise ValueError('card_identity_mismatch')
+        view=reading_card(card)
+        rows=''.join('<tr><td>'+esc(r['placement'])+'</td><td>'+esc(r['reason'])+'</td><td>'+esc(r['text'])+'</td></tr>' for r in view['audit'])
+        sections.append('<section><h2>'+esc(item['title'])+'</h2><p><a rel="noreferrer" href="'+esc(item['url'],quote=True)+'">Original source</a></p><h3>Editorial decisions</h3><table>'+rows+'</table><h3>Complete extracted source</h3><pre>'+esc(card.get('source_body','Full source unavailable in this fixture.'))+'</pre></section>')
+    return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'"><title>Cheryl — supporting report</title><style>body{max-width:960px;margin:32px auto;padding:0 20px;font:16px/1.6 system-ui;background:#faf8f1;color:#24372e}section{border-top:1px solid #ccc;margin-top:32px}pre,td{white-space:pre-wrap;overflow-wrap:anywhere}td{padding:10px;vertical-align:top;border-bottom:1px solid #ddd}table{width:100%;border-collapse:collapse}</style><h1>Cheryl’s AI &amp; Tech Brief — supporting report</h1><p>Exact extracted source and editorial placement decisions. Source claims require review; no independent fact-check is implied.</p>'+''.join(sections)+'</html>'
 
 
 def units(s):return len(s.encode('utf-16-le'))//2
@@ -249,38 +304,64 @@ def split_parts(paragraphs):
     return [f'**☕ Cheryl’s AI & Tech Brief** · {i}/{len(bodies)}\n\n'+body for i,body in enumerate(bodies,1)]
 
 
-def render(edition,cards,failures=None,coverage=None,preview=False):
+def story_blocks(paragraphs,title):
+    """Keep a whole story together where possible; explicitly label overflow."""
+    story='\n\n'.join(paragraphs)
+    if units(story)<=PART_UNITS:return [story]
+    continuation='**↪ '+clean(title)+' — continued**'
+    result=[];current=[]
+    for p in paragraphs:
+        if units(p)+units(continuation)+4>PART_UNITS:raise ValueError('paragraph_requires_review')
+        if current and units('\n\n'.join(current+[p]))>PART_UNITS:
+            # Do not strand a section heading/title at the end of a part.
+            tail=[]
+            while current and current[-1].startswith('**') and current[-1].endswith('**'):
+                tail.insert(0,current.pop())
+            if not current:raise ValueError('heading_requires_review')
+            result.append('\n\n'.join(current));current=[continuation]+tail
+        current.append(p)
+        if units('\n\n'.join(current))>PART_UNITS:raise ValueError('paragraph_requires_review')
+    if current:result.append('\n\n'.join(current))
+    return result
+
+
+def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None):
     items=edition['items'];failures=failures or {};start=edition['cutoff']-86400
     def date(t):return datetime.fromtimestamp(t,ZONE).strftime('%b %d, %I:%M %p %Z')
-    detailed=[i for i in items if i['id'] in cards][:MAX_DETAILED]
+    views={key:reading_card(card) for key,card in cards.items()}
+    detailed=[i for i in items if i['id'] in views and not views[i['id']]['held']][:MAX_DETAILED]
     heading=datetime.fromtimestamp(edition['cutoff'],ZONE).strftime('%A, %B %d')
-    blocks=[f'*{heading} · Morning edition*']
-    if preview:blocks.append('**PREVIEW — saved results; not a new model run**')
-    blocks += [
-            date(start)+' → '+date(edition['cutoff']),
-            ('Official-source excerpts selected with MiniCPM. Source claims are not independently verified.' if detailed else
-             'Source links only; no verified model brief in this edition.')]
+    if preview:
+        generated=time.time() if generated_at is None else stamp(generated_at)
+        introduction=['**PREVIEW — saved results; not a new model run**',
+                      'Prepared '+date(generated),
+                      'Historical source window: '+date(start)+' → '+date(edition['cutoff'])]
+    else:introduction=[f'*{heading} · Morning edition*',date(start)+' → '+date(edition['cutoff'])]
+    introduction.append('Source-linked excerpts selected with MiniCPM; technical reference details stay in the supporting report.' if detailed else 'Source links only; no verified model brief in this edition.')
+    blocks=['\n\n'.join(introduction)]
     quick=[i for i in items if i not in detailed]
     for index,item in enumerate(detailed):
         card=cards[item['id']]
+        view=views[item['id']];story=[]
         if url(card['url'])!=item['url']:raise ValueError('card_identity_mismatch')
-        if index==0:blocks.append('**📰 The lead story**')
-        elif index==1:blocks.append('**🗞 Worth knowing**')
-        blocks.append('**🔹 '+clean(item['title'])+'**')
-        if item.get('changed_observed_at'):blocks.append('Updated listing — not necessarily a new release.')
-        if item['published'] is None:blocks.append('Publication date unavailable; included by discovery time.')
-        blocks += [clean(p) for p in card['highlights']]
-        if card['conditions']:
-            blocks.append('**📝 Conditions to know**')
-            blocks += ['• '+clean(p) for p in card['conditions']]
-        blocks.append('🔗 '+item['url'])
+        if index==0:story.append('**📰 The lead story**')
+        elif index==1:story.append('**🗞 Worth knowing**')
+        story.append('**🔹 '+clean(item['title'])+'**')
+        if item.get('changed_observed_at'):story.append('Updated listing — not necessarily a new release.')
+        if item['published'] is None:story.append('Publication date unavailable; included by discovery time.')
+        story += [clean(p) for p in view['highlights']]
+        if view['conditions']:
+            story.append('**📝 Keep in mind**')
+            story += ['• '+clean(p) for p in view['conditions']]
+        story.append('🔗 '+item['url'])
+        blocks.extend(story_blocks(story,item['title']))
     if quick:
-        blocks.append('**⚡ Quick hits**')
-        for item in quick:
+        for index,item in enumerate(quick):
             reason=failures.get(item['id'],'Headline only; full-article brief not generated.')
+            if item['id'] in views and views[item['id']]['held']:reason='Brief held: selected text needs more context. Read the original source.'
             if item.get('changed_observed_at'):reason='Updated listing. '+reason
             if item['published'] is None:reason+=' Publication date unknown; discovered in this window.'
-            blocks.append('**🔹 '+clean(item['title'])+'**\n'+clean(reason)+'\n🔗 '+item['url'])
+            blocks.append(('**⚡ Quick hits**\n\n' if index==0 else '')+'**🔹 '+clean(item['title'])+'**\n'+clean(reason)+'\n🔗 '+item['url'])
     if not items:blocks.append('No eligible new items were found in the preceding 24 hours. This does not prove no news occurred.')
     if edition.get('overflow'):blocks.append(f"{edition['overflow']} additional eligible items are retained in the archive. They were not included in this recap; older items will not be recycled as new news.")
     if coverage:
@@ -293,20 +374,22 @@ def demo(out):
     out=Path(out);out.mkdir(parents=True,exist_ok=False)
     until=datetime(2026,9,18,8,tzinfo=ZONE).timestamp()
     store=Store(out/'demo.sqlite3')
-    items=[{'source':'example','company':'Fictional Lab','title':title,
+    items=[{'source':f'fictional-{i}','company':title.split()[1]+' (fictional)','title':title,
             'url':f'https://example.com/fictional/{i}','excerpt':'Fictional evaluation data.',
             'published':until-3600-i,'first_seen':until-3600-i} for i,title in enumerate([
                 'Fictional Cedar launches a review checklist tool','Fictional Birch API adds local exports',
-                'Fictional Pine fixes a configuration error','Fictional Maple publishes documentation'])]
+                'Fictional Pine fixes a configuration error','Fictional Maple publishes documentation',
+                'Fictional Elm updates its editor','Fictional Ash publishes a tutorial'])]
     store.ingest(items,until);edition=store.claim(until,force=True)
     cards={}
-    for item in edition['items'][:2]:
+    for item in edition['items'][:4]:
         cards[item['id']]={'url':item['url'],'highlights':['This is fictional demonstration text, not a real announcement or model result.','Teams can turn a change list into a checklist for human review.'],
             'conditions':['Available only to invited teams. A person must approve the result.']}
     parts=render(edition,cards,preview=True)
     parts=[p.replace('**PREVIEW — saved results; not a new model run**','**SYNTHETIC DEMO — fictional, hand-authored; zero model calls**')
-             .replace('Official-source excerpts selected with MiniCPM. Source claims are not independently verified.','Illustrative excerpts; no model selection performed.') for p in parts]
+             .replace('Source-linked excerpts selected with MiniCPM; technical reference details stay in the supporting report.','Illustrative excerpts; no model selection performed.') for p in parts]
     for i,part in enumerate(parts,1):w.atomic(out/f'part-{i}.md',part)
+    w.atomic(out/'supporting-report.html',supporting_report(edition,cards))
     w.save(out/'manifest.json',{'version':VERSION,'synthetic':True,'model_calls':0,'delivery':'not_sent','parts':len(parts)})
     store.close()
     return len(parts)

@@ -29,11 +29,30 @@ The formatter uses bold section headings, restrained emoji, condition bullets
 and numbered parts. Maximum9 stories,4 detailed cards,16 parts. A paragraph that
 cannot safely fit requires review rather than being silently clipped.
 
+### Editorial repair in 0.7.1
+
+`reading_card` separates the short reading view from the full report. It removes
+standalone list introductions/navigation, field-reference highlights and
+unmentioned API definitions, with a reason recorded for each placement. Access,
+price, deadlines, directly referenced definitions and unknown qualifications stay
+visible. Restrictive unfinished introductions or unfinished selected claims hold
+the card as a source link. This heuristic can miss semantic relationships; it is
+not a substitute for editorial review. Source wording is never rewritten.
+
+`supporting_report(edition, cards)` returns escaped, script-free HTML containing
+the complete extracted article and placement decisions. Save it privately before
+sending; it contains third-party source material. Do not publish it by default.
+Source links remain the reader's route to the original; there is no new report host.
+
+Whole stories stay together whenever they fit. Oversized stories use named
+continuations, and headings stay with their following paragraphs. Preview editions
+show preparation time and historical source window, never a false morning label.
+
 ## Integration example
 
 ```python
 import time
-from newsdesk.digest import Store, render, verified_card
+from newsdesk.digest import Store, render, verified_card, supporting_report
 
 store = Store("private-state.sqlite3")  # protect with OS permissions; never commit
 store.initialize(time.time())         # first scheduled edition: next8AM Eastern
@@ -44,6 +63,7 @@ if edition:
     # cards[item_id] = verified_card(article, packet, selection)
     # A blocked or unsupported item stays a link. Do not pass arbitrary model prose.
     parts = render(edition, cards)
+    # Persist supporting_report(edition, cards) in protected local storage first.
     store.ready(edition["id"], parts, time.time())
     for index, part in enumerate(parts):
         store.reserve_send(edition["id"], index, part)

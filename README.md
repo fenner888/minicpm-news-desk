@@ -1,4 +1,4 @@
-# MiniCPM News Desk — 0.7.0 daily recap preview
+# MiniCPM News Desk — 0.7.1 daily recap preview
 
 An experimental local-first news reader powered by MiniCPM5-2B and ordinary
 Python. It helps an operator review official announcements with source-linked
@@ -28,9 +28,12 @@ updates worth knowing, and smaller quick hits, all linked to original sources.
   the 24-hour window. Display the omitted count.
 
 MiniCPM selects **exact source passages**, rather than generating free-form
-newsletter prose. Availability, pricing, scope and definitions are independently
-retained. The result is intentionally more conservative, and sometimes longer,
-than a professionally edited newsletter. No affiliation with Morning Brew.
+newsletter prose. A deterministic editorial layer retains relevant qualifications
+in the brief and moves navigation, unrelated field definitions and background
+detail into a private supporting report. Unknown conditions stay visible. These
+are English heuristics, not a guarantee of semantic completeness; review is still
+required. Full extracted sources and placement reasons remain in the report.
+No affiliation with Morning Brew.
 
 Try the fictional daily layout without a model or network:
 
@@ -38,7 +41,7 @@ Try the fictional daily layout without a model or network:
 python3.14 -m newsdesk.digest demo --out outputs/daily-demo-1
 ```
 
-Open the generated part-1.md (additional parts are numbered). All content is
+Open the generated part-1.md and supporting-report.html (additional parts are numbered). All content is
 fictional and hand-authored; the manifest records zero model calls. A shareable
 example is in [samples/daily-recap](samples/daily-recap).
 

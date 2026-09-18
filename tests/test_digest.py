@@ -163,7 +163,7 @@ class Digest(unittest.TestCase):
         detailed=' '.join(d.render(e,{item['id']:{'url':item['url'],'highlights':['Verified passage.'],'conditions':['Only invited teams.']}}))
         self.assertIn('**📰 The lead story**',detailed)
         self.assertIn('**🔹 ',detailed)
-        self.assertIn('**📝 Conditions to know**',detailed)
+        self.assertIn('**📝 Keep in mind**',detailed)
         self.assertIn('• Only invited teams.',detailed)
         self.assertIn('🔗 '+item['url'],out)
 
