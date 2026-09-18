@@ -84,6 +84,19 @@ page breaks. One message is preferred when the whole edition fits the existing s
 limit; content is never cut solely to force a single message. The latest nine-item
 replay still needs two messages. Source text remains untrusted and inert.
 
+### Date preservation repair in 0.7.4
+
+A real current-data test found that an Ubuntu migration brief omitted its date
+range and explicit version-pinning alternative. The source was complete; exact
+quotes alone did not guarantee completeness. Protected-block policy v4 now covers
+between/through ranges, explicit month/day and ISO dates, roll-out wording, and
+migration compatibility/deferral guidance. Pure "To learn more" navigation moves
+to the supporting report; access, price, deadline and safety qualifications remain.
+These are heuristics, not a guarantee of complete fact recall across every source.
+The model, prompt and inference settings are unchanged. Old packets/selection
+hashes are not compatible with the new policy; regenerate packets and keep old
+artifacts as historical evidence rather than silently rewriting them.
+
 ## Integration example
 
 ```python

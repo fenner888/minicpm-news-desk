@@ -19,7 +19,7 @@ import uuid
 from zoneinfo import ZoneInfo
 from . import facts as f, workflow as w
 
-VERSION='0.7.3'
+VERSION='0.7.4'
 ZONE=ZoneInfo('America/New_York')
 MAX_STORIES=9
 MAX_DETAILED=4
@@ -264,7 +264,7 @@ def reading_card(card):
     highlights=[];conditions=[];audit=[];held=False
     identifiers=lambda s:set(re.findall(r'\b[a-zA-Z][a-zA-Z0-9]*_[a-zA-Z0-9_]+\b',s))
     material=re.compile(r'[$€£]\s*\d|\b(?:pricing|costs?|billed|billing|subscription|available (?:only |to |in )|invited|eligible|requires?|must|permission|does not apply|not added to|private or internal|enforc\w*|deadline|until|starting|beginning|November|December|January|February|March|April|May|June|July|August|September|October)\b',re.I)
-    navigation=re.compile(r'^(?:To get started|Visit |For (?:more|further) (?:details|information)|Learn more|Read (?:the|our) (?:docs|documentation))',re.I)
+    navigation=re.compile(r'^(?:To get started|To learn more|Visit |For (?:more|further) (?:details|information)|Learn more|Read (?:the|our) (?:docs|documentation))',re.I)
     safety=re.compile(r'\b(?:leaks?|credentials?|exfiltrat\w*|unsafe|cannot|unless|consent|retention|not (?:available|supported)|limited to|only works|supports? only)\b',re.I)
     for position,p in enumerate(card['highlights']):
         reason=None
@@ -282,7 +282,7 @@ def reading_card(card):
             reason='list_introduction_requires_context'
             # A restrictive introduction cannot safely be detached from its list.
             if re.search(r'\b(?:only|must|require\w*|except|unless|limited|cost\w*)\b',p,re.I):held=True
-        elif navigation.search(p) and not material.search(p):reason='navigation_not_news'
+        elif navigation.search(p) and not material.search(p) and not safety.search(p):reason='navigation_not_news'
         elif re.match(r'^To prepare for ',p,re.I) and not re.search(r'\d|\b(?:must|only|unless|cost|price)\b',p,re.I):reason='procedural_reference'
         elif re.match(r'^Empty (?:arrays|fields)\b',p,re.I) and not re.search(r'\b(?:null|zero|empty|absent)\b',' '.join(highlights),re.I):reason='unmentioned_missing_value_semantics'
         elif re.match(r'^Plugin metrics count\b',p,re.I) and not re.search(r'\b(?:counts?|totals?|invocations?|interactions?)\b',' '.join(highlights),re.I):reason='unmentioned_count_relationship'

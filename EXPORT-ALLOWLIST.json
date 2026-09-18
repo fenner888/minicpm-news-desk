@@ -20,6 +20,7 @@
     "tests/test_digest.py",
     "tests/test_editorial.py",
     "tests/test_quickhits.py",
+    "tests/test_dates.py",
     "START-HERE.md",
     "LICENSE",
     "SECURITY.md",

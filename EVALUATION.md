@@ -1,4 +1,30 @@
-# Evaluation — 0.7.3 daily recap preview
+# Evaluation — 0.7.4 daily recap preview
+
+## September 18 date-preservation repair
+
+The previous current-data run completed three local requests, but content review
+found one incomplete brief: an Ubuntu migration date range and version-pinning
+option were absent. The full source was available. Protected-block patterns missed
+"between October" and "roll out"; successful requests/tests were not sufficient
+evidence of completeness. The original failed output remains preserved privately.
+
+Policy v4 fixes these patterns and protects related compatibility/deferral advice.
+197 public tests plus74 private tests pass (271 total), including nine new date,
+migration, navigation, identity/qualification and injection regression cases.
+Five saved-result replays from four distinct articles preserve prior substantive
+content, add the missing date/pinning passages and remove only a navigation note.
+Packets were regenerated for explicit replay; historical responses were not
+silently relabeled as outputs of the new policy.
+
+One fresh local MiniCPM request on a newly fetched affected article completed in
+40.48seconds (866 total tokens). Dates, pinning option, source scope and breakage
+warning survived the reading view; runtime identity/cleanup checks passed. No
+hosted fallback or retries. Combined validation preview: one fresh card plus two
+saved selections, three parts, not sent. It is not a new all-fresh edition.
+
+The known defect is fixed and verified; this is a development regression test,
+not an unseen holdout or universal completeness claim. Longer editions can need
+three messages. First scheduled daily delivery remains unobserved.
 
 ## September 18 quick-hit context
 

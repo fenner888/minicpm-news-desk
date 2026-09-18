@@ -2,7 +2,7 @@
 
 **SYNTHETIC DEMO — fictional, hand-authored; zero model calls**
 
-Prepared Sep 18, 10:30 AM EDT
+Prepared Sep 18, 11:40 AM EDT
 
 Historical source window: Sep 17, 08:00 AM EDT → Sep 18, 08:00 AM EDT
 

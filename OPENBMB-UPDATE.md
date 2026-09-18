@@ -14,8 +14,8 @@ other updates worth knowing, and source-linked quick hits. Collection can run
 hourly without hourly MiniCPM notifications. Dates, deduplication, budgets and
 delivery receipts are deterministic code; the model selects grounded passages.
 
-The public package includes188 offline tests and a fictional no-model daily demo.
-The separate private integration passes262 tests in total. The editorial update
+The public package includes197 offline tests and a fictional no-model daily demo.
+The separate private integration passes271 tests in total. The editorial update
 replayed three saved real-model results into two Telegram messages, with full
 extracted articles and placement decisions retained in a private supporting report.
 This presentation test made no new model calls. The first scheduled daily delivery
@@ -30,6 +30,12 @@ The original articles had been used before, so this is not an unseen holdout tes
 A later no-inference replay added publisher excerpts to four of those seven quick
 hits using feed text and bounded official-page metadata. Three remained headline
 links. The added detail still fits two messages; this replay was not sent again.
+
+A subsequent three-request test revealed an omitted migration date range, which
+we repaired in the source-preservation rules. Five saved replays and one fresh
+local request verified the correction, retaining the dates and version-pinning
+alternative. That request completed in40.48seconds. Longer editions can require
+three messages. This is development evidence, not a broad accuracy benchmark.
 
 Earlier on September18, three real GitHub article tests each produced useful
 local selections in roughly40–43 seconds including setup/checks/cleanup. Those

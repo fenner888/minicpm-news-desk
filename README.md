@@ -1,4 +1,4 @@
-# MiniCPM News Desk — 0.7.3 daily recap preview
+# MiniCPM News Desk — 0.7.4 daily recap preview
 
 An experimental local-first news reader powered by MiniCPM5-2B and ordinary
 Python. It helps an operator review official announcements with source-linked

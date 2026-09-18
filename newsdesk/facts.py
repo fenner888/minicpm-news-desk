@@ -8,15 +8,16 @@ from . import core as c
 
 CONTRACT = 'newsdesk-highlights-v2'
 POLICY = {
-    'version': 'protected-blocks-v3-definitions',
+    'version': 'protected-blocks-v4-migration-dates',
     'rules': {
         'price': r'[$€£]\s*\d|\b(?:prices?|pricing|costs?|credits?|billing|subscriptions?|free)\b',
-        'access_limits': r'\b(?:available|availability|only|invited?|preview|approval|eligible|rollout|rolling out|markets?|US-based|international|opt[ -]?in(?:to)?|if enabled|limited|limits?|requires?|cannot|must|not yet|not supported|select advertisers|being tested)\b',
+        'access_limits': r'\b(?:available|availability|only|invited?|preview|approval|eligible|roll[ -]?out|roll(?:s|ed|ing)? out|markets?|US-based|international|opt[ -]?in(?:to)?|if enabled|limited|limits?|requires?|cannot|must|not yet|not supported|select advertisers|being tested)\b',
         'setup_scope': r'/(?:new|memory|dream)\b|\b(?:first completed turn|after (?:a|the) turn|new sessions|current conversation|per project|global set)\b',
         'separation': r'\b(?:clearly labeled|independent answers|separate from|distinct from)\b',
         'exclusions': r'\b(?:excluded?|left out|does not|do not|will not)\b',
         'definitions': r'\b(?:at least|at most|up to|means|defined as|counts?|counted|denominator|numerator|omitted|absent|null|not measured|rolling \d+[ -]day)\b',
-        'effective_dates': r'\b(?:on|from|by|starting|beginning|until|after|before)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\b',
+        'effective_dates': r'\b(?:(?:on|from|by|starting|beginning|until|after|before|between|through)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\b|(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}\b|\d{4}-\d{2}-\d{2}\b)',
+        'migration_guidance': r'\b(?:migrat\w*|upgrad\w*)\b.*\b(?:break|test|pin|stay|remain|defer|delay)\b|\b(?:pin|stay on|remain on)\b.*\b(?:version|image|release|workflows?)\b',
     },
     'sections': ['availability','pricing','limitations','restrictions','new commands','getting started','access','requirements','important notes','new secure defaults'],
     'pool': 'lead4_plus_first3_practical_use_blocks',
