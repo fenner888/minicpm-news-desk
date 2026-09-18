@@ -1,6 +1,6 @@
 # Security boundaries and operator responsibilities
 
-This is a local, single-operator experimental CLI. There are no public HTTP
+This is a local, single-operator CLI. There are no public HTTP
 routes, user roles, browser login tokens or multi-tenant storage. Local OS/file
 permissions protect saved artifacts. Do not expose a generated report server
 or model endpoint publicly based on this package's tests.

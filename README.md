@@ -1,10 +1,12 @@
-# MiniCPM News Desk — 0.7.5 daily recap preview
+# MiniCPM News Desk
 
-An experimental local-first news reader powered by MiniCPM5-2B and ordinary
+A local-first news reader powered by MiniCPM5-2B and ordinary
 Python. It helps an operator review official announcements with source-linked
 passages and explicit access, pricing and setup conditions.
 
-**Experimental public research preview. Review required.** The portable package
+**Start with the [step-by-step setup guide](SETUP.md).** Try the layout without a
+model, then connect local MiniCPM for real article selection. Review source context
+before sharing an output. The portable package
 does not connect a Telegram account or install a schedule. A separate private
 integration runs the daily workflow; bring your own collector and delivery adapter.
 Project code is MIT licensed; see LICENSE. Model/runtime licenses remain separate.
@@ -20,12 +22,13 @@ That distinction also applies to screenshots of the actual Telegram test output.
 
 - **Public package 0.7.5:** 203 offline tests; includes a conservative fix for
   qualified passages being mistaken for navigation or background text.
-- **Latest real-model delivery test, on 0.7.4:** one fresh local MiniCPM brief
-  plus eight source-only items, delivered as two confirmed Telegram messages.
-  The local request took 40.57 seconds. The test required recovery from an
-  operator working-directory error; it was not a clean unattended run.
-- The public 0.7.5 formatter has **not** been deployed or live-model tested.
-  The first scheduled morning delivery remains unobserved as of September 18.
+- **Deployed and tested on 0.7.5:** 203 public tests plus 74 private integration
+  tests passed. Two fresh local MiniCPM requests completed in 37.27 and 40.16
+  seconds. Two model-derived briefs and seven source-only quick hits reached
+  Telegram in two confirmed messages, with no model retries or hosted fallback.
+- All nine portable Python modules match the public source. The existing daily
+  schedule and collector are unchanged. The first scheduled morning delivery
+  remains unobserved as of September 18; this was a manually triggered live test.
 
 See [EVALUATION.md](EVALUATION.md) for evidence and limitations, and
 [CHANGELOG.md](CHANGELOG.md) for the differences between versions.

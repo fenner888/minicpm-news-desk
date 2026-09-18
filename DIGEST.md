@@ -110,8 +110,10 @@ moves to the supporting report; incomplete restrictive passages still hold the c
 
 This is a deterministic formatter correction, not a model/prompt/policy-hash or
 timing change. Six additional offline regression tests cover the affected paths.
-No new inference or deployment accompanies this public package update; the most
-recent delivered model output was produced on 0.7.4.
+The subsequent owner-approved deployment passed 203 public plus 74 private tests.
+Two fresh local-model briefs and seven source-only quick hits were delivered in
+two confirmed Telegram messages on 0.7.5. See [EVALUATION.md](EVALUATION.md) for
+measured results and the separate pending scheduled-delivery observation.
 
 ## Integration example
 

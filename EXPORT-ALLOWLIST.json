@@ -1,5 +1,5 @@
 {
-  "status": "owner-approved public MIT research preview; not unattended production",
+  "status": "public MIT briefing toolkit; scheduling and delivery require separate integration",
   "files": [
     "README.md",
     "AGENTS.md",
@@ -24,6 +24,7 @@
     "tests/test_quickhits.py",
     "tests/test_dates.py",
     "START-HERE.md",
+    "SETUP.md",
     "LICENSE",
     "SECURITY.md",
     "OPERATIONS.md",

@@ -1,4 +1,4 @@
-# Using the research candidate responsibly
+# Operating MiniCPM News Desk
 
 This release does not enable an unattended service. Review one item at a time
 before sharing it. Keep extraction, model selection, reader acceptance and
@@ -22,10 +22,11 @@ correcting its launch location enabled the subsequent real-model delivery test.
 Do not misclassify `worker_failed` as a remote outage or automatically retry it.
 Keep diagnostic stderr private if inspecting a custom integration.
 
-The public 0.7.5 formatter update is not automatically installed into an existing
-private integration. Back up state, verify code/version hashes, run its integration
-tests and review a bounded output before promoting a new version. Do not claim
-0.7.4 live-delivery evidence as 0.7.5 live qualification.
+Pulling a public update does not automatically update an existing private
+integration. Back up state, verify code/version hashes, run its integration tests
+and review a bounded output before promoting a new version. The owner's 0.7.5
+promotion and fresh confirmed delivery are recorded in EVALUATION.md; other
+installations still need their own checks.
 
 Observe first scheduled delivery separately from a preview send. Review source
 failures, the number of full-source cards versus links, overflow, date coverage

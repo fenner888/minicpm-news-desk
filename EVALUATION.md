@@ -1,4 +1,39 @@
-# Evaluation — 0.7.5 daily recap preview
+# Evaluation — MiniCPM News Desk 0.7.5
+
+## September 18 deployed 0.7.5 and fresh Telegram delivery
+
+The owner approved promotion of the reviewed 0.7.5 formatter into the private
+integration. Staging and deployed checks passed 203 public tests and 74 private
+integration tests (277 total), plus five saved-result replays. All nine portable
+Python modules match public code commit `2943c67`; later documentation-only commits
+do not change those modules. Rollback files and prior evidence were preserved.
+
+One newly prepared edition used the exact preceding 24 hours ending September 18
+at 12:16 PM America/New_York. Discovery reported 28/28 registered sources successful;
+nine of 24 eligible items were selected. This is not coverage of every company
+channel or full-article/model coverage of all 28 sources.
+
+Two fresh local MiniCPM requests produced source-bound briefs, with runtime identity
+and cleanup checks passing. The Ubuntu migration request took 37.27 seconds
+(342 prompt + 476 completion = 818 tokens); the agentic CLI metrics request took
+40.16 seconds (326 + 525 = 851 tokens). Both were manually compared with their full
+retrieved source texts. Migration dates, pinning guidance, setup requirements and
+relevant access/privacy qualifications remained visible. These are development
+cases, not an unseen holdout or independently graded accuracy estimate.
+
+Four fetch reservations and two model attempts were used; no full-article or model
+failures, inference retries or hosted requests occurred in this edition. Seven
+other selected items were source-only quick hits: six had publisher descriptions,
+one was headline-only. Those are not seven additional model summaries. Fifteen
+eligible items remained outside this edition and were disclosed as overflow.
+
+The actual delivery adapter confirmed both numbered Telegram messages. Production
+archive, schedule, destination and original collector remained unchanged; the test
+used isolated delivery state. Provider API charges were zero; hardware/electricity
+and review time were not measured. First scheduled morning delivery remains
+unobserved as of September 18. This confirms the tested manual end-to-end path,
+not future unattended reliability. Private sources, reasoning and recipient IDs
+are not published.
 
 ## September 18 public-package review (0.7.5)
 
@@ -10,10 +45,9 @@ The formatter now retains those qualifications, still removes plain navigation,
 and avoids duplicating a qualification already displayed. No model/prompt,
 source-selection policy, schedule or integration change is part of this release.
 
-This is offline software evidence. The private runtime remains on 0.7.4; its
-74 integration tests have not been requalified against 0.7.5. Do not add those
-historical private tests to this version's 203 public tests or present earlier
-model output as 0.7.5 live validation. See CHANGELOG.md for the release boundary.
+At the initial public-package checkpoint this was offline-only evidence, with the
+private runtime still on 0.7.4. The separately authorized 0.7.5 deployment and new
+model/delivery measurements are recorded above; earlier outputs are not relabeled.
 
 The public suite also passed with real network connections and child-process
 launches blocked. A clean 43-file copy passed all 203 tests, both no-model demos
@@ -178,7 +212,7 @@ their own policy/source hashes. Previous failed runs remain valid evidence.
 ## Historical v0.6.1 record
 
 Run date: September 17, 2026. Owner: Mark Fenner. Decision: owner approved public
-source publication as an experimental local package on September 17, 2026.
+source publication as a local package on September 17, 2026.
 This approval does not establish unattended production reliability. A separate
 private three-hour delivery pilot was scheduled at that checkpoint; its results
 are not included in the historical measurements below. Subsequent checks showed

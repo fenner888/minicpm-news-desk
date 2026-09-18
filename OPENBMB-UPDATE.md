@@ -3,7 +3,7 @@
 Updated September 18, 2026. This is a project update draft, not evidence of
 selection, endorsement, an award or a submitted follow-up.
 
-I've made MiniCPM News Desk public as an MIT-licensed research preview.
+I've made MiniCPM News Desk public as an MIT-licensed local news briefing toolkit.
 
 I wanted to test a practical use for MiniCPM5-2B on hardware I already own:
 an Intel Core i5-9400F Linux desktop with 16 GB RAM, using CPU-only inference.
@@ -16,19 +16,19 @@ articles. Code handles dates, deduplication, source qualifications, formatting
 and delivery. Quick hits use labeled publisher excerpts or headline links;
 those are separate from full-article model-derived briefs.
 
-The latest real test used version 0.7.4. One fresh local request completed in
-40.57 seconds, and the recap reached Telegram in two confirmed parts: one model
-brief plus eight source-only items. An initial manual launch-path error required
-correction before that run. We also found and repaired an earlier omission of
-migration dates and version-pinning guidance. The failure history remains visible
-in EVALUATION.md; this is not a general accuracy or unattended-reliability claim.
+The latest real test used deployed version 0.7.5. Two fresh local requests
+completed in 37.27 and 40.16 seconds. The recap reached Telegram in two confirmed
+parts: two model-derived briefs and seven source-only quick hits. There were no
+model retries or hosted requests. 203 public tests and 74 private integration
+tests passed, and the portable runtime modules match the public source.
 
-The public package is now 0.7.5, with 203 offline tests and an additional
-conservative reading-view fix for qualifications embedded in navigation-like
-passages. That formatter change has not been deployed or fresh-model tested.
-The private integration remains separate; its first scheduled morning delivery
-still needs observation. The public repository does not install a collector,
-connect Telegram or configure an unattended job for someone cloning it.
+Earlier testing found and repaired an omission of migration dates and pinning
+guidance, plus a manual launch-path error. The failure history remains in
+EVALUATION.md; this is not a general accuracy or unattended-reliability claim.
+The private integration remains separate, and its first scheduled morning delivery
+still needs observation. SETUP.md walks through the demo and local-model workflow;
+the repository does not install a collector, connect Telegram or configure an
+unattended job for someone cloning it.
 
 I see this as a practical local-inference/deployment experiment. Provider API
 charges for these local runs were zero, but electricity, hardware and review

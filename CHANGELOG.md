@@ -1,6 +1,6 @@
 # Changelog
 
-Public research-preview versions; these are not automatic private deployments.
+Public package versions; updating source does not automatically update a private deployment.
 
 ## 0.7.5 — September 18, 2026
 
@@ -13,8 +13,14 @@ Public research-preview versions; these are not automatic private deployments.
   historical fixtures and the boundary between public code and private delivery.
 - Refresh the fictional daily sample and contributor guidance.
 
-No new model calls, private deployment, schedule change or Telegram send. The
-private 0.7.4 integration's tests and delivery are not 0.7.5 live qualification.
+The initial source cleanup made no model calls, deployment or sends. A subsequent
+owner-approved 0.7.5 promotion passed 203 public plus 74 private tests and five saved
+replays. Two fresh local requests produced two briefs; those and seven source-only
+quick hits reached Telegram in two confirmed messages. Schedule/archive unchanged.
+See EVALUATION.md for the new evidence, separate from historical 0.7.4 results.
+
+Follow-up documentation adds SETUP.md and clearly separates the offline demo,
+local inference and custom delivery integration.
 
 ## 0.7.4 — September 18, 2026
 
