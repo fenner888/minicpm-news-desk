@@ -14,12 +14,12 @@ from pathlib import Path
 import re
 import sqlite3
 import time
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 import uuid
 from zoneinfo import ZoneInfo
 from . import facts as f, workflow as w
 
-VERSION='0.7.1'
+VERSION='0.7.2'
 ZONE=ZoneInfo('America/New_York')
 MAX_STORIES=9
 MAX_DETAILED=4
@@ -59,6 +59,24 @@ def clean(value):
     value=''.join(c if c.isalnum() or c in " .,;:_'’“”()?—–-%$€£+&" else ' ' for c in value)
     value=' '.join(value.split())
     return re.sub(r'\b[a-zA-Z][a-zA-Z0-9]*_[a-zA-Z0-9_]+\b',lambda m:'`'+m[0]+'`',value)
+
+
+def source_link(value):
+    # Model/source text never supplies a Markdown label. Encode delimiters before
+    # inserting the validated HTTPS URL into a renderer-owned link.
+    target=quote(url(value),safe=':/?=&%+-._~')
+    return '[Read the source ↗]('+target+')'
+
+
+def reading_paragraphs(passages):
+    """Join short related highlights without creating an oversized paragraph."""
+    paragraphs=[]
+    for raw in passages:
+        p=clean(raw)
+        if paragraphs and units(paragraphs[-1]+' '+p)<=1400:
+            paragraphs[-1]+=' '+p
+        else:paragraphs.append(p)
+    return paragraphs
 
 
 def cutoff(now):
@@ -325,7 +343,8 @@ def story_blocks(paragraphs,title):
     return result
 
 
-def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None):
+def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None,live_test=False):
+    if preview and live_test:raise ValueError('ambiguous_preview_origin')
     items=edition['items'];failures=failures or {};start=edition['cutoff']-86400
     def date(t):return datetime.fromtimestamp(t,ZONE).strftime('%b %d, %I:%M %p %Z')
     views={key:reading_card(card) for key,card in cards.items()}
@@ -336,8 +355,9 @@ def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=
         introduction=['**PREVIEW — saved results; not a new model run**',
                       'Prepared '+date(generated),
                       'Historical source window: '+date(start)+' → '+date(edition['cutoff'])]
-    else:introduction=[f'*{heading} · Morning edition*',date(start)+' → '+date(edition['cutoff'])]
-    introduction.append('Source-linked excerpts selected with MiniCPM; technical reference details stay in the supporting report.' if detailed else 'Source links only; no verified model brief in this edition.')
+    else:introduction=[f'*{heading} · '+('Live test edition*' if live_test else 'Morning edition*'),
+                       'Your last 24 hours in AI & tech.']
+    if not detailed:introduction.append('Source links only; no verified model brief in this edition.')
     blocks=['\n\n'.join(introduction)]
     quick=[i for i in items if i not in detailed]
     for index,item in enumerate(detailed):
@@ -346,27 +366,34 @@ def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=
         if url(card['url'])!=item['url']:raise ValueError('card_identity_mismatch')
         if index==0:story.append('**📰 The lead story**')
         elif index==1:story.append('**🗞 Worth knowing**')
-        story.append('**🔹 '+clean(item['title'])+'**')
+        story.append('**'+clean(item['title'])+'**')
         if item.get('changed_observed_at'):story.append('Updated listing — not necessarily a new release.')
         if item['published'] is None:story.append('Publication date unavailable; included by discovery time.')
-        story += [clean(p) for p in view['highlights']]
-        if view['conditions']:
+        story += reading_paragraphs(view['highlights'])
+        if len(view['conditions'])==1:
+            story.append('**📝 Keep in mind:** '+clean(view['conditions'][0]))
+        elif view['conditions']:
             story.append('**📝 Keep in mind**')
             story += ['• '+clean(p) for p in view['conditions']]
-        story.append('🔗 '+item['url'])
+        story.append(source_link(item['url']))
         blocks.extend(story_blocks(story,item['title']))
     if quick:
-        for index,item in enumerate(quick):
-            reason=failures.get(item['id'],'Headline only; full-article brief not generated.')
+        quick_blocks=['**⚡ Quick hits**','*Source headlines and links; full-article briefs are not included in this section.*']
+        for item in quick:
+            reason=failures.get(item['id'],'')
             if item['id'] in views and views[item['id']]['held']:reason='Brief held: selected text needs more context. Read the original source.'
             if item.get('changed_observed_at'):reason='Updated listing. '+reason
             if item['published'] is None:reason+=' Publication date unknown; discovered in this window.'
-            blocks.append(('**⚡ Quick hits**\n\n' if index==0 else '')+'**🔹 '+clean(item['title'])+'**\n'+clean(reason)+'\n🔗 '+item['url'])
+            quick_blocks.append('**'+clean(item['title'])+'**\n'+(clean(reason)+'\n' if reason.strip() else '')+source_link(item['url']))
+        blocks.extend(story_blocks(quick_blocks,'Quick hits — source links'))
     if not items:blocks.append('No eligible new items were found in the preceding 24 hours. This does not prove no news occurred.')
     if edition.get('overflow'):blocks.append(f"{edition['overflow']} additional eligible items are retained in the archive. They were not included in this recap; older items will not be recycled as new news.")
     if coverage:
         blocks.append(f"Coverage: {coverage['ok']}/{coverage['total']} registered sources reported successful; not every company channel.")
         if coverage.get('stale'):blocks.append('Collection has not refreshed through the cutoff. Coverage may be incomplete.')
+    if not preview:
+        blocks.append('*'+('Live test · daily recap schedule unchanged.\n' if live_test else '')+
+                      'Window: '+date(start)+' → '+date(edition['cutoff'])+'*')
     return split_parts(blocks)
 
 
@@ -386,8 +413,7 @@ def demo(out):
         cards[item['id']]={'url':item['url'],'highlights':['This is fictional demonstration text, not a real announcement or model result.','Teams can turn a change list into a checklist for human review.'],
             'conditions':['Available only to invited teams. A person must approve the result.']}
     parts=render(edition,cards,preview=True)
-    parts=[p.replace('**PREVIEW — saved results; not a new model run**','**SYNTHETIC DEMO — fictional, hand-authored; zero model calls**')
-             .replace('Source-linked excerpts selected with MiniCPM; technical reference details stay in the supporting report.','Illustrative excerpts; no model selection performed.') for p in parts]
+    parts=[p.replace('**PREVIEW — saved results; not a new model run**','**SYNTHETIC DEMO — fictional, hand-authored; zero model calls**') for p in parts]
     for i,part in enumerate(parts,1):w.atomic(out/f'part-{i}.md',part)
     w.atomic(out/'supporting-report.html',supporting_report(edition,cards))
     w.save(out/'manifest.json',{'version':VERSION,'synthetic':True,'model_calls':0,'delivery':'not_sent','parts':len(parts)})

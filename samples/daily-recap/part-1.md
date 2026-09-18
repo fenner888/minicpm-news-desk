@@ -2,70 +2,52 @@
 
 **SYNTHETIC DEMO — fictional, hand-authored; zero model calls**
 
-Prepared Sep 18, 09:53 AM EDT
+Prepared Sep 18, 10:10 AM EDT
 
 Historical source window: Sep 17, 08:00 AM EDT → Sep 18, 08:00 AM EDT
 
-Illustrative excerpts; no model selection performed.
-
 **📰 The lead story**
 
-**🔹 Fictional Cedar launches a review checklist tool**
+**Fictional Cedar launches a review checklist tool**
 
-This is fictional demonstration text, not a real announcement or model result.
+This is fictional demonstration text, not a real announcement or model result. Teams can turn a change list into a checklist for human review.
 
-Teams can turn a change list into a checklist for human review.
+**📝 Keep in mind:** Available only to invited teams. A person must approve the result.
 
-**📝 Keep in mind**
-
-• Available only to invited teams. A person must approve the result.
-
-🔗 https://example.com/fictional/0
+[Read the source ↗](https://example.com/fictional/0)
 
 **🗞 Worth knowing**
 
-**🔹 Fictional Birch API adds local exports**
+**Fictional Birch API adds local exports**
 
-This is fictional demonstration text, not a real announcement or model result.
+This is fictional demonstration text, not a real announcement or model result. Teams can turn a change list into a checklist for human review.
 
-Teams can turn a change list into a checklist for human review.
+**📝 Keep in mind:** Available only to invited teams. A person must approve the result.
 
-**📝 Keep in mind**
+[Read the source ↗](https://example.com/fictional/1)
 
-• Available only to invited teams. A person must approve the result.
+**Fictional Pine fixes a configuration error**
 
-🔗 https://example.com/fictional/1
+This is fictional demonstration text, not a real announcement or model result. Teams can turn a change list into a checklist for human review.
 
-**🔹 Fictional Pine fixes a configuration error**
+**📝 Keep in mind:** Available only to invited teams. A person must approve the result.
 
-This is fictional demonstration text, not a real announcement or model result.
+[Read the source ↗](https://example.com/fictional/2)
 
-Teams can turn a change list into a checklist for human review.
+**Fictional Maple publishes documentation**
 
-**📝 Keep in mind**
+This is fictional demonstration text, not a real announcement or model result. Teams can turn a change list into a checklist for human review.
 
-• Available only to invited teams. A person must approve the result.
+**📝 Keep in mind:** Available only to invited teams. A person must approve the result.
 
-🔗 https://example.com/fictional/2
-
-**🔹 Fictional Maple publishes documentation**
-
-This is fictional demonstration text, not a real announcement or model result.
-
-Teams can turn a change list into a checklist for human review.
-
-**📝 Keep in mind**
-
-• Available only to invited teams. A person must approve the result.
-
-🔗 https://example.com/fictional/3
+[Read the source ↗](https://example.com/fictional/3)
 
 **⚡ Quick hits**
 
-**🔹 Fictional Elm updates its editor**
-Headline only; full-article brief not generated.
-🔗 https://example.com/fictional/4
+*Source headlines and links; full-article briefs are not included in this section.*
 
-**🔹 Fictional Ash publishes a tutorial**
-Headline only; full-article brief not generated.
-🔗 https://example.com/fictional/5
+**Fictional Elm updates its editor**
+[Read the source ↗](https://example.com/fictional/4)
+
+**Fictional Ash publishes a tutorial**
+[Read the source ↗](https://example.com/fictional/5)

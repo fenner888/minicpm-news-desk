@@ -1,4 +1,4 @@
-# MiniCPM News Desk — 0.7.1 daily recap preview
+# MiniCPM News Desk — 0.7.2 daily recap preview
 
 An experimental local-first news reader powered by MiniCPM5-2B and ordinary
 Python. It helps an operator review official announcements with source-linked
@@ -19,7 +19,8 @@ updates worth knowing, and smaller quick hits, all linked to original sources.
   breaking-news alerts.
 - Use source publication dates when available; otherwise label discovery time.
   Older articles are not recycled as fresh news. Listing revisions are updates.
-- Up to one lead, three additional detailed stories and five source-link hits.
+- Up to nine items total: one lead and at most three additional detailed stories;
+  remaining selected items appear as source links when no verified brief exists.
 - Deduplicate canonical URLs and same-source identical headline/day events.
   This is deterministic editorial ranking, not comprehensive semantic clustering.
 - Preserve material conditions. Word counts are soft targets, not truncation

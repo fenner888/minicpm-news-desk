@@ -106,5 +106,37 @@ class Editorial(unittest.TestCase):
         c=self.card(conditions=['Only invited teams.','Only invited teams.'])
         self.assertEqual(d.reading_card(c)['conditions'],['Only invited teams.'])
 
+    def test_reading_paragraphs_join_without_loss(self):
+        self.assertEqual(d.reading_paragraphs(['One sentence.','Related sentence.']),['One sentence. Related sentence.'])
+        self.assertEqual(len(d.reading_paragraphs(['a'*1000,'b'*1000])),2)
+
+    def test_inline_one_condition_bullets_for_multiple(self):
+        e=self.edition()
+        s=' '.join(d.render(e,{'one':self.card(conditions=['Only invited teams.'])}))
+        self.assertIn('**📝 Keep in mind:** Only invited teams.',s)
+        self.assertNotIn('• Only',s)
+        s=' '.join(d.render(e,{'one':self.card(conditions=['Only invited teams.','It costs $2.'])}))
+        self.assertIn('**📝 Keep in mind**\n\n• Only invited teams.\n\n• It costs $2.',s)
+
+    def test_source_link_delimiters_encoded(self):
+        self.assertEqual(d.source_link('https://example.com/a(b)'),
+                         '[Read the source ↗](https://example.com/a%28b%29)')
+        with self.assertRaises(ValueError):d.source_link('https://example.com/[injected]')
+        with self.assertRaises(ValueError):d.source_link('https://user:token@example.com/a')
+
+    def test_live_test_labels_not_saved_or_scheduled(self):
+        s=' '.join(d.render(self.edition(),{'one':self.card()},live_test=True))
+        self.assertIn('Live test edition',s);self.assertIn('schedule unchanged',s)
+        self.assertNotIn('saved results',s);self.assertNotIn('Morning edition',s)
+        self.assertIn('Your last 24 hours in AI & tech.',s)
+        with self.assertRaises(ValueError):d.render(self.edition(),{},preview=True,live_test=True)
+
+    def test_quick_hits_share_one_notice_keep_uncertainty(self):
+        e=self.edition();e['items'] += [{**e['items'][0],'id':'two','title':'Another story','published':None}]
+        s=' '.join(d.render(e,{}))
+        self.assertEqual(s.count('full-article briefs are not included'),1)
+        self.assertIn('Publication date unknown',s)
+        self.assertEqual(s.count('[Read the source ↗]'),2)
+
 
 if __name__=='__main__':unittest.main()

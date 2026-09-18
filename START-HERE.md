@@ -1,4 +1,4 @@
-# Start here — MiniCPM News Desk 0.7.1
+# Start here — MiniCPM News Desk 0.7.2
 
 A local, source-linked AI/technology news review tool. MiniCPM picks useful source
 passages; deterministic code preserves restrictions and handles empty results.
@@ -8,7 +8,7 @@ Repository: https://github.com/fenner888/minicpm-news-desk
 1. Read README.md for capabilities, limits and setup.
 2. Try `python3.14 -m newsdesk.digest demo --out outputs/first-daily-demo`.
    Read part-1.md and supporting-report.html. Fictional data; no model, network or credentials are needed.
-3. Run `python3.14 -m unittest discover -s tests -v` —166 tests.
+3. Run `python3.14 -m unittest discover -s tests -v` —171 tests.
 4. Inspect the bundled normal and fallback examples in samples/. Both are
    synthetic demonstrations, not actual model responses.
 5. Read DIGEST.md for the daily24-hour recap and integration contract; read

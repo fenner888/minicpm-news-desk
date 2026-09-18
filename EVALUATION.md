@@ -1,4 +1,32 @@
-# Evaluation — 0.7.1 daily recap preview
+# Evaluation — 0.7.2 daily recap preview
+
+## September 18 current-data polish test
+
+171 public tests plus 71 private tests pass (242 total). The current-data test
+sampled the nine newest discoveries inside a rolling 24-hour window across six
+sources. That sampling was test-only; scheduled daily importance ranking is
+unchanged. The collector reported 28/28 sources successful, not full-article
+coverage of all sources or all company channels.
+
+Two fresh local MiniCPM requests processed newly fetched GitHub pages, finishing
+in 40.15 and 41.73 seconds including runtime checks/cleanup (850 and 947 tokens).
+Both produced validated selections, with cleanup verified and no retries or paid
+fallback. The articles had appeared in earlier saved replays; these are fresh
+generations on current retrieved pages, not unseen holdout stories. The other
+seven selected items were explicitly source-headline links, including newly
+collected Google and AWS posts whose full-source adapters are not implemented.
+
+A two-part live-test edition was confirmed delivered to the private test chat.
+The daily production archive, schedule and original collector were unchanged.
+The formatter was then promoted after tests; no prompt/model change. A temporary
+test ledger separated its delivery from the scheduled daily recap. This proves
+the tested current-data path, not broad reliability or new-vendor summarization.
+Provider API charges were zero; electricity/hardware costs were not measured.
+
+Polish joins short related passages, uses one inline caveat or multiple bullets,
+removes per-headline decorations, uses validated named source links, and groups
+quick hits under one source-only disclosure. Exact source words remain intact.
+First scheduled daily delivery is still a separate pending observation.
 
 ## September 18 editorial repair
 

@@ -48,6 +48,18 @@ Whole stories stay together whenever they fit. Oversized stories use named
 continuations, and headings stay with their following paragraphs. Preview editions
 show preparation time and historical source window, never a false morning label.
 
+### Presentation polish in 0.7.2
+
+Story headlines are plain bold; emojis identify sections rather than every item.
+Short related highlights join into one paragraph without changing their words.
+One qualification is inline; multiple qualifications retain bullets. Original
+HTTPS links use a fixed “Read the source ↗” label with encoded Markdown delimiters.
+Normal editions open with “Your last 24 hours in AI & tech.” `live_test=True`
+labels an isolated current-data test, distinct from `preview=True` saved replays.
+The two modes cannot be combined. Neither flag authorizes fetching or sending.
+Quick hits share a source-only disclosure and stay grouped where they fit;
+per-item date uncertainty and failures are still visible.
+
 ## Integration example
 
 ```python
