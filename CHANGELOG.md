@@ -5,24 +5,29 @@ Public package versions; updating source does not automatically update a private
 ## 0.8.1 — September 21, 2026
 
 Deterministic repairs derived from the private frozen benchmark of 0.8.0
-(eight GitHub articles, two repeats, no-model baseline). No model, prompt,
-runtime setting or reasoning budget changed; no new inference was run.
+(eight GitHub articles, two repeats, no-model baseline). Shipped model, prompt,
+runtime setting and reasoning budget remain unchanged. The initial repairs were
+offline; the separately authorized 512/1024 comparison is recorded in EVALUATION.md.
 
-- Parser keeps one table row per line with ` | ` between cells; previously
-  pretty-printed cells became one block each and minified cells ran together,
-  so a deprecation table lost its model/date/replacement relationships.
+- Parser keeps simple table rows on separate lines with ` | ` between cells.
+  Previously pretty-printed cells became separate blocks and minified cells ran
+  together. Final review adds fail-closed handling for nested/spanning tables
+  and prevents hidden markup from corrupting visible row state.
 - Selector pool excludes short blocks without terminal punctuation. Emoji,
   apostrophe or digit headings and bare table cells had occupied lead pool slots
   in five of eight benchmark articles, and the first-two baseline quoted them.
 - Protection policy v6 adds stated prerequisites (`you’ll need`, `or later`,
-  `prerequisites`) and rejection clauses (`rejects`, `refuses`). A version/2FA
-  prerequisites paragraph and a direct-publish rejection had been neither
-  protected nor selectable.
-- `verified_card` carries protection rule names as `condition_rules`;
-  `reading_card` keeps important-notes-section or exclusion-tagged definitions in
-  the brief instead of moving them to the report. Untagged cards keep prior
-  placement.
-- 264 offline tests pass (seven new failing-first regressions). Offline replay of
+  `prerequisites`) and rejection clauses (`rejects`, `refuses`). The version/2FA
+  prerequisites were neither protected nor selectable; the direct-publish
+  rejection was selectable but unprotected and omitted on one repeat.
+- `verified_card` carries `highlight_rules` and `condition_rules`; section- or
+  exclusion-tagged field passages stay visible whether selected or independently
+  retained. Absent metadata keeps legacy behavior; malformed/misaligned metadata
+  is rejected. Existing navigation and incomplete-context guards remain.
+- Final review passes 270 offline tests: seven initial additions plus six final
+  edge-case tests, including five reproduced failures and one preventive guard.
+  The final corrections were not part of the frozen live budget comparison.
+- At the initial 264-test checkpoint, offline replay of
   the benchmark's saved selections through the new preparation/reading layers
   retains 7/7 units on both npm-token runs (was 6 and 4), 6/7 on both
   dashboard runs (was 4) and 5/7 on the CLI-metrics run (was 4); the deprecation
@@ -31,10 +36,11 @@ runtime setting or reasoning budget changed; no new inference was run.
   select differently on a fresh run.
 
 Policy v6 changes packet hashes. Regenerate packets for explicit replay; retain
-older artifacts as historical evidence. `REASONING_BUDGET` stays 512: the
-benchmark found 18 of 20 completions ending at the budget, which is the leading
-hypothesis for one unnecessary abstention, but changing a qualified runtime
-setting requires a separately authorized live evaluation.
+older artifacts as historical evidence. The final offline replay revalidates the
+two original acceptance responses under their old packets, then applies unchanged
+IDs to new packets: both qualification checks pass, with two unsent message parts.
+`REASONING_BUDGET` stays 512. Token-count/ending heuristics suggest budget pressure
+but do not establish its cause or justify a production setting change.
 
 ## 0.8.0 — September 21, 2026
 

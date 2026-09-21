@@ -149,12 +149,18 @@ class ArticleParser(HTMLParser):
             self.title_count += 1; self.title_depth = len(self.stack)
         if tag in self.BLOCK:
             self.break_line(tag)
-        if tag == 'tr':
-            self.row_depth = len(self.stack); self.cells = 0
-        elif tag in self.CELL and self.row_depth is not None:
-            if self.cells:
-                self.handle_data(' | ')
-            self.cells += 1
+        if self.target_depth is not None and not blocked:
+            if tag == 'table' and 'table' in parent_tags:
+                raise ValueError('unsupported_table_structure')
+            if tag == 'tr':
+                if self.row_depth is not None:raise ValueError('unsupported_table_structure')
+                self.row_depth = len(self.stack); self.cells = 0
+            elif tag in self.CELL:
+                if self.row_depth is None or any(d.get(k, '1') != '1' for k in ('rowspan', 'colspan')):
+                    raise ValueError('unsupported_table_structure')
+                if self.cells:
+                    self.handle_data(' | ')
+                self.cells += 1
 
     def handle_startendtag(self, tag, attrs):
         self.handle_starttag(tag, attrs)

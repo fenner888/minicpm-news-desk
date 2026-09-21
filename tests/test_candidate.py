@@ -75,6 +75,23 @@ class CoreTests(unittest.TestCase):
                 self.assertEqual(lines[0],'Retiring models:');self.assertEqual(lines[-1],'Update workflows first.')
                 self.assertNotIn('2026-10-19',[l.strip() for l in lines])
 
+    def test_nested_table_requires_review(self):
+        table='<table><tr><td>Original<table><tr><td>Nested</td></tr></table>tail</td><td>Replacement</td></tr></table>'
+        with self.assertRaisesRegex(ValueError,'unsupported_table_structure'):
+            c.extract('github','https://github.blog/changelog/test',markup('github','<p>'+BODY+'</p>'+table))
+
+    def test_table_spans_require_review(self):
+        for span in ('rowspan="2"','colspan="2"','rowspan="0"','colspan="invalid"'):
+            with self.subTest(span=span),self.assertRaisesRegex(ValueError,'unsupported_table_structure'):
+                table='<table><tr><td '+span+'>Original</td><td>Replacement</td></tr></table>'
+                c.extract('github','https://github.blog/changelog/test',markup('github','<p>'+BODY+'</p>'+table))
+
+    def test_hidden_table_does_not_corrupt_visible_row(self):
+        table='<table><tr><td>Original<table hidden><tr><td>Hidden</td></tr></table> tail</td><td hidden>Hidden</td><td>Replacement</td></tr><tr><td rowspan="1">Another</td><td colspan="1">Successor</td></tr></table>'
+        body=c.extract('github','https://github.blog/changelog/test',markup('github','<p>'+BODY+'</p>'+table))['body']
+        self.assertEqual(body.splitlines(),[BODY,'Original tail | Replacement','Another | Successor'])
+        self.assertNotIn('Hidden',body)
+
     def test_excludes_unsafe_or_hidden_content(self):
         raw=b'<div class="prose"><p>'+BODY.encode()+b'</p><script>BAD</script><nav>BAD</nav><div hidden>BAD</div><span aria-hidden="true">BAD</span><i style="display:none">BAD</i><iframe>BAD</iframe></div>'
         self.assertNotIn('BAD',c.extract('xai',URL,raw)['body'])

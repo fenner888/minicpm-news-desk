@@ -15,7 +15,11 @@ or model endpoint publicly based on this package's tests.
   application resolves exact source text; this does not prove relevance or truth.
 - Rule-preserved conditions can be incomplete. Always inspect original context.
 - Known instruction-like patterns hold the item; this is not complete injection
-  detection. Markup is escaped and reports use a restrictive CSP.
+  detection. The September 21 budget experiment selected a synthetic indirect
+  instruction paragraph in one 512-token run. It was quoted, not executed;
+  escaping alone does not make the selection editorially safe. Human review
+  remains required.
+  Markup is escaped and reports use a restrictive CSP.
 - Retrieval permits fixed public hosts/paths, refuses redirects and non-public
   DNS results, checks TLS names, connects to the checked address and caps time/bytes.
 - Model transport uses authenticated numeric loopback, no proxies or redirects,

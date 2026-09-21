@@ -31,3 +31,18 @@ ambiguous, truncated, nested or oversized context stays held. Other unfinished
 restriction lists remain held. Do not change prompts, packets, historical outputs,
 production state or model budgets. Verify the saved live responses offline and
 report this separately from another live model-to-Telegram run.
+
+### 0.8.1 final source-preservation review
+
+Simple HTML tables must retain visible cell boundaries and row order independently
+of source whitespace. Nested tables and spanning cells are unsupported and must
+fail closed rather than imply ambiguous column relationships. Hidden tables and
+cells must not corrupt surrounding visible row state.
+
+Protection metadata must survive both selected highlights and independently
+retained conditions. Section/exclusion-tagged field passages cannot disappear
+because the model selects them. Navigation and incomplete-context holds remain.
+Absent metadata preserves legacy behavior; supplied metadata must be parallel
+lists of string lists, including rejecting an empty list for nonempty passages.
+The running budget comparison stays frozen at its recorded commit; these final
+corrections receive separate offline validation, not retroactive live credit.

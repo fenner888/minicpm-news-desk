@@ -27,11 +27,14 @@ The screenshot is a **fictional layout example**, not a fresh model result.
 
 ## Current evidence
 
-- **0.8.1:** deterministic repairs from a private frozen benchmark of 0.8.0 that
-  did **not** show a coverage benefit over a no-model baseline: table rows kept
-  intact, fragments out of the selector pool, prerequisite/rejection protection
-  and protection reasons carried into the brief. **264 offline tests pass.** No
-  model, prompt or runtime setting changed; no new inference or send occurred.
+- **0.8.1:** deterministic source-preservation repairs; **270 offline tests pass**.
+  A separate 40-call comparison on an earlier frozen 0.8.1 checkpoint found that
+  1024 reasoning tokens improved coverage over 512 on known cases, but matched
+  an exploratory deterministic comparator and still missed the quality targets.
+  One synthetic instruction passage was selected at 512. Human review remains
+  required; the shipped setting stays 512. Final edge-case corrections and two
+  original acceptance-response replays have offline evidence only. No private
+  deployment or new Telegram send occurred. See [EVALUATION.md](EVALUATION.md).
 - **0.8.0:** adds the public reference workflow and repairs technical-character
   loss, tested licensing omissions and a preparation-context false hold.
   257 offline tests passed. Two fresh local selections and one actual Telegram

@@ -7,8 +7,14 @@ Version 0.8.0 adds a separate opt-in reference workflow; read
 REFERENCE-WORKFLOW.md and specs/2026-09-21-public-readiness/ for its gates.
 Version 0.8.1 contains deterministic repairs from a private frozen benchmark;
 the benchmark corpus, scores and raw results are private regression evidence
-and must not be tuned against or rescored. `REASONING_BUDGET` is a qualified
-runtime setting: changing it requires an authorized live evaluation.
+and must not be tuned against or rescored. Never overwrite or relabel original
+results, or call later repairs a holdout.
+The authorized 40-call 512/1024 comparison is complete; its budget is consumed.
+The shipped budget remains 512. A synthetic indirect-instruction selection
+failure is preserved in EVALUATION.md and SECURITY.md. Final release corrections
+have 270 offline tests and saved-response replay evidence, not fresh inference.
+`REASONING_BUDGET` is a qualified runtime setting: changing it requires an
+explicitly authorized evaluation and separate promotion decision.
 
 ## Stack and scope
 

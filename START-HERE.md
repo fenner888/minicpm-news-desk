@@ -18,7 +18,7 @@ Repository: https://github.com/fenner888/minicpm-news-desk
 Run commands from the cloned repository root. Python 3.14.7 and system timezone
 data are the tested prerequisites; the demo needs neither model weights nor keys.
 
-Version 0.8.1 includes 264 offline checks, a documented live acceptance test of
+Version 0.8.1 includes 270 offline checks, a documented live acceptance test of
 0.8.0, and deterministic repairs from a private frozen benchmark that did not show
 a coverage benefit over a no-model baseline. This is not unattended reliability
 evidence. The local collection/preview/send path uses separate state

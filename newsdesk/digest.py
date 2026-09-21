@@ -267,8 +267,10 @@ def verified_card(article,packet,card):
     if not selected:raise ValueError('no_model_highlights')
     visible={b['id'] for b in selected}
     conditions=[b for b in packet['protected'] if b['id'] not in visible]
+    protected={b['id']:b['rules'] for b in packet['protected']}
     return {'title':article['title'],'url':article['url'],'source_sha256':article['source_sha256'],
             'highlights':[b['text'] for b in selected],
+            'highlight_rules':[list(protected.get(b['id'],[])) for b in selected],
             'conditions':[b['text'] for b in conditions],
             'condition_rules':[list(b.get('rules',[])) for b in conditions],
             'source_body':article['body'],'selected_ids':[b['id'] for b in selected]}
@@ -301,6 +303,14 @@ def reading_card(card):
     its reason. Unknown conditions stay visible; no arbitrary word-count cutoff.
     """
     highlights=[];conditions=[];audit=[];held=False
+    def passage_rules(key,passages):
+        rules=card.get(key,[[] for _ in passages])
+        if not isinstance(rules,list) or len(rules)!=len(passages) or any(not isinstance(row,list) or any(not isinstance(r,str) for r in row) for row in rules):
+            raise ValueError(key+'_mismatch')
+        return rules
+    highlight_rules=passage_rules('highlight_rules',card['highlights'])
+    condition_rules=passage_rules('condition_rules',card['conditions'])
+    tagged=lambda rules:any(r=='exclusions' or r in {'section:'+s for s in f.POLICY['sections']} for r in rules)
     identifiers=lambda s:set(re.findall(r'\b[a-zA-Z][a-zA-Z0-9]*_[a-zA-Z0-9_]+\b',s))
     material=re.compile(r'[$€£]\s*\d|\b(?:pricing|costs?|billed|billing|subscription|available (?:only |to |in )|invited|eligible|requires?|must|permission|does not apply|not added to|private or internal|enforc\w*|deadline|until|starting|beginning|November|December|January|February|March|April|May|June|July|August|September|October)\b',re.I)
     navigation=re.compile(r'^(?:To get started|To learn more|Visit |For (?:more|further) (?:details|information)|Learn more|Read (?:the|our) (?:docs|documentation))',re.I)
@@ -313,14 +323,11 @@ def reading_card(card):
         if p.rstrip().endswith(':'):
             reason='incomplete_highlight';held=True
         elif navigation.search(p) and not qualified(p):reason='navigation_not_news'
-        elif position and re.match(r'^`?[A-Za-z]\w*_\w+`?\s*:',p) and not qualified(p):reason='field_reference_not_overview'
+        elif position and re.match(r'^`?[A-Za-z]\w*_\w+`?\s*:',p) and not qualified(p) and not tagged(highlight_rules[position]):reason='field_reference_not_overview'
         if reason:audit.append({'text':p,'placement':'report','reason':reason})
         else:highlights.append(p);audit.append({'text':p,'placement':'brief','reason':'model_selected_overview'})
     mentioned=identifiers(' '.join(highlights));covered=set()
     # Protection reasons recorded by facts.prepare; older cards carry none.
-    rules=card.get('condition_rules') or [[] for _ in card['conditions']]
-    if len(rules)!=len(card['conditions']):raise ValueError('condition_rules_mismatch')
-    tagged=lambda index:any(r=='exclusions' or r.startswith('section:') for r in rules[index])
     for index,p in enumerate(card['conditions']):
         reason=None;fields=identifiers(p);retained='qualification_retained'
         if p in highlights or p in conditions or p in covered:reason='already_shown'
@@ -338,7 +345,7 @@ def reading_card(card):
         elif re.match(r'^To prepare for ',p,re.I) and not re.search(r'\d|\b(?:must|only|unless|cost|price)\b',p,re.I):reason='procedural_reference'
         # An important-notes section or exclusion clause outranks the
         # unmentioned-definition heuristics below; navigation/holds are unchanged.
-        elif tagged(index):retained='protected_section_or_exclusion_retained'
+        elif tagged(condition_rules[index]):retained='protected_section_or_exclusion_retained'
         elif re.match(r'^Empty (?:arrays|fields)\b',p,re.I) and not re.search(r'\b(?:null|zero|empty|absent)\b',' '.join(highlights),re.I):reason='unmentioned_missing_value_semantics'
         elif re.match(r'^Plugin metrics count\b',p,re.I) and not re.search(r'\b(?:counts?|totals?|invocations?|interactions?)\b',' '.join(highlights),re.I):reason='unmentioned_count_relationship'
         elif re.match(r'^Active .+ code review means\b',p,re.I) and 'code review' not in ' '.join(highlights).lower():reason='unmentioned_feature_definition'

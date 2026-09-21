@@ -195,6 +195,19 @@ class Digest(unittest.TestCase):
         view=d.reading_card(result)
         self.assertFalse(view['held']);self.assertEqual(view['conditions'],body.splitlines()[2:])
 
+    def test_selected_protected_field_keeps_its_qualification(self):
+        for section,note in (('Important notes\n','request_count: Failed attempts count toward the total.'),
+                             ('','request_count: Failed attempts do not count toward successful connections.')):
+            body='A fictional dashboard now shows team activity.\n'+section+note
+            a={'source':'synthetic','url':None,'title':'SYNTHETIC Example','body':body,'source_sha256':c.digest(body),'contract':c.CONTRACT,'published':None,'first_seen':None}
+            packet=f.prepare(a);note_id=next(b['id'] for b in packet['pool'] if b['text']==note)
+            for ids in (['b001'],['b001',note_id]):
+                with self.subTest(section=section,ids=ids):
+                    result=d.verified_card(a,packet,{'packet_sha256':packet['packet_sha256'],'highlights':ids})
+                    view=d.reading_card(result)
+                    self.assertFalse(view['held'])
+                    self.assertIn(note,view['highlights']+view['conditions'])
+
     def test_source_identity_mismatch(self):
         e=self.edition();cards={e['items'][0]['id']:{'url':'https://example.com/wrong','highlights':['x'],'conditions':[]}}
         with self.assertRaises(ValueError):d.render(e,cards)

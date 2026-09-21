@@ -3,7 +3,7 @@
 ## September 21 frozen benchmark of 0.8.0 and deterministic repairs (0.8.1)
 
 A private frozen-set benchmark ran unchanged 0.8.0 on eight GitHub changelog
-articles (six new, two known regressions) plus four synthetic edge cases, each
+articles (six labeled prospective, two known regressions) plus four synthetic edge cases, each
 twice, with a no-model first-two-eligible baseline and assistant-authored
 annotations frozen before inference. Twenty local CPU-only calls completed; no
 retries, sends or hosted requests. Raw sources, reasoning and the corpus are
@@ -13,27 +13,123 @@ baseline; 58/58 emitted passages exact source spans; fetch-to-render median
 33.8 s, max 39.9 s. **The workflow did not meet its coverage targets and did not
 show an information-recall benefit over deterministic extraction on this set.**
 Do not cite these figures as model accuracy; the annotations are not independent
-human gold, the set is one publisher, and the precision review was not able to
-register a failure.
+human gold and the set is one publisher. The contextual-precision script encodes
+the assistant's stated review as fixed all-supported verdicts with article-level
+rationales; it is not an automated semantic grader. The earlier review overstated
+this as invalidating the recorded judgments. Preserve them as assistant judgments,
+not independently reproducible proof of semantic precision.
 
-An independent review of that evidence traced every missed unit to code and
-produced the 0.8.1 repairs listed in CHANGELOG.md: table rows kept on one line,
-short fragments and unrecognized headings excluded from the selector pool,
-protection policy v6 for prerequisites/rejections, and protection reasons carried
-into the reading view. Seven failing-first regressions were added; **264 offline
-tests pass** and both offline demos run. Replaying the benchmark's saved selections
-through the repaired preparation/reading layers raises the affected articles as
-recorded in CHANGELOG.md; the deprecation table is still correctly held because a
-list introduction followed by table rows has no complete-context assembly yet.
+A separate assistant review traced specific omissions to code and prompted the
+0.8.1 repairs listed in CHANGELOG.md: simple table rows kept on one line, short
+fragments excluded from the selector pool, policy v6 for prerequisites/rejections,
+and protection reasons carried into the reading view. The initial checkpoint
+passed 264 offline tests, including seven added tests (some preventive rather
+than demonstrated failing-first). Saved-ID replays improved selected known cases;
+the deprecation brief remained held. These are development regressions, not a
+new model-accuracy measurement. Because only extracted bodies were saved, those
+replays and the budget comparison cannot test the repaired HTML table extraction.
 
-Not changed: model, prompt, sampling, context and the 512-token reasoning budget.
-The benchmark showed 18 of 20 completions ending at that budget; the single
-unnecessary abstention ended mid-decision. Raising the budget is a new
-qualified-setting evaluation and needs explicit authorization and a live run.
-The frozen v1 corpus is preserved as regression evidence; a new annotated holdout
-across more than one publisher, with a preregistered sentence-filtered comparator
-and per-passage precision verdicts, is the next measurement. No private
-deployment, schedule or delivery changed with this version.
+Shipped model, prompt, sampling, context and the 512-token reasoning budget remain
+unchanged. Eighteen of twenty v1 calls had completion-token counts near the
+reasoning cap, suggesting budget pressure. Total completion tokens include the
+answer, and a nonterminal reasoning ending is only a heuristic; neither proves
+that the budget caused the empty response. The earlier claim that truncation was
+almost certainly the cause was too strong. The isolated comparison below tests
+1024 without promoting that setting.
+
+The frozen v1 corpus is now development/regression evidence, not a holdout.
+Some critical labels combine several facts or make field definitions mandatory
+when the brief never mentions the field; they need prospective adjudication,
+not score-driven relabeling. A future holdout must verify prior exposure, use
+atomic relationship-preserving anchors and preregister the sentence-filtered
+baseline and passage-level contextual judgments. No private deployment, schedule
+or delivery changed.
+
+## September 21 isolated reasoning-budget comparison
+
+**Decision: keep the shipped 512-token setting and human review; do not promote
+production or claim inference superiority.** The owner authorized 40 calls total:
+20 at 512 and 20 at 1024, each covering the same eight real articles and four
+synthetic cases twice. Four preflight holds per arm made 48 case-runs in total.
+All 40 calls completed with valid responses; an empty response is not a quality
+success. No retries, hosted requests, source refetches or Telegram sends occurred.
+
+Both arms used the frozen initial 0.8.1 commit `8065f2e`, identical source bodies,
+gold, pools, prompt and runtime. Only the isolated 1024 arm's selector budget and
+matching transport budget check differed. This is a known-corpus development
+comparison, not a new holdout. It does not live-test the final corrections below.
+
+| Real-article measure | 512 tokens | 1024 tokens | First-two deterministic baseline |
+|---|---:|---:|---:|
+| Detailed briefs (not quality passes) | 12/16 | 14/16 | 12/16 |
+| Retained annotated units, holds/empty = zero | 74/126 (58.7%) | 90/126 (71.4%) | 80/126 (63.5%) |
+| Recall conditional on a detailed brief | 74/88 (84.1%) | 90/106 (84.9%) | 80/90 (88.9%) |
+| Critical omissions in emitted briefs | 5 in 3 briefs | 6 in 4 briefs | 2 in 2 briefs |
+| Frozen content gate passes | 6/16 | 6/16 | 6/16 |
+| Frozen-text-to-render median | 34.00 s | 54.51 s | 0.26 / 0.21 s by arm |
+| Frozen-text-to-render nearest-rank p95/max | 39.06 s | 72.64 s | 0.69 / 0.65 s by arm |
+
+At 512, the dashboard first repeat and roundup second repeat unnecessarily
+selected nothing. At 1024, neither did; the deprecation article remained held
+both times in both arms. Selected IDs were identical across repeats for 5/8
+articles at 512 and 7/8 at 1024. This small, non-counterbalanced comparison ran
+512 first, then 1024, with stochastic sampling and different cache histories;
+it does not prove why any individual response changed.
+
+All 61/61 and 76/76 emitted real-article passages respectively passed the
+normalized source-span check, not an independent semantic-precision test.
+Raw model selections covered 43 and 48 units; rules retained 37 and 48 additional
+units respectively, while 6 raw-selected units per arm were absent from the final
+view. This overlap accounting avoids attributing rules' work to the model.
+
+The first-two baseline was held on R01 because the cleaned pool exposed an
+unfinished list introduction. An **exploratory offline recheck**, using the
+previously proposed rule (first two pool blocks of at least 60 characters ending
+in `.`, `!` or `?`), retained **90/126 units with 14/16 briefs**, matching the
+1024 arm's per-article recall. This was not the preregistered comparator for this
+budget experiment; its Mac latency is not compared with the remote run.
+
+Security edges remain material: the 512 arm selected the synthetic indirect
+instruction paragraph on one repeat. It was quoted in the review output, not
+executed; no tools, secrets or delivery authority were available to the model.
+The other repeat and both 1024 repeats avoided it. Sparse teaser abstention,
+explicit-pattern injection holds and oversized-source holds behaved as expected.
+This is not general prompt-injection resistance. Preserve the failed selection.
+
+Completion-token counts were at least the respective reasoning budget on 18/20
+and 6/20 calls; the recorded nonterminal-ending heuristic flagged 18/20 and 4/20.
+These are proxies, not server-certified budget-exhaustion or natural-finish rates.
+The higher budget improved observed coverage/availability but still missed the
+90% targets and zero-critical-omission gate, and did not beat the stronger
+exploratory deterministic comparator. No automatic default change is warranted.
+
+Timings include warm-runtime selector preflight/inference, validation, formatting
+and artifact writes. They exclude fetching, RSS, scheduling, server startup,
+human review and Telegram delivery. Among rendered briefs, medians were 34.00 s
+and 53.03 s; maxima were unchanged. Repeats are not independent articles, and
+small-sample p95 equals max here. Cleanup passed for both arms: temporary listener
+closed, original process/health and protected code/configuration/schedule hashes
+unchanged. The 40-call authorization is consumed; no further inference is implied.
+
+## Final 0.8.1 offline release verification
+
+Review before publication found additional edge cases in the initial repairs:
+nested/spanning table structure, hidden table state, selected protected API
+passages and malformed rule metadata. Six additional tests now cover these;
+five reproduced failures before correction and one preserves existing guards.
+**270 tests pass**, also with real sockets/process launches blocked and in a
+fresh 63-file allowlisted export. Both demos and isolated state initialization /
+source-only build pass. Export, local-link, standard-library dependency, targeted
+credential-pattern and whitespace checks pass; this is not a security certification.
+
+Both original 0.8.0 acceptance responses were revalidated under their original
+packets using frozen code, then replayed with unchanged IDs against new policy-v6
+packets. Source qualifications survive in both briefs. The labeled saved replay
+uses two parts (1,756 and 1,942 UTF-16 units), with zero new model calls or sends.
+Earlier evidence and samples remain historical. Final code differs from the
+frozen budget experiment; these last corrections have offline evidence only.
+Publication shares review-required source code, not a private-runtime deployment.
+The proposed next holdout protocol is in [specs/roadmap.md](specs/roadmap.md).
 
 ## September 21 publication checkpoint (0.8.0)
 

@@ -88,6 +88,22 @@ class Editorial(unittest.TestCase):
         view=d.reading_card(c)
         self.assertTrue(view['held']);self.assertFalse(view['conditions'])
 
+    def test_explicit_rule_metadata_must_match_passages(self):
+        for field in ('highlight_rules','condition_rules'):
+            for invalid in ([],None,'exclusions',['exclusions'],[None],[[None]],[[],[]]):
+                with self.subTest(field=field,invalid=invalid):
+                    c=self.card(conditions=['A source qualification remains visible.'])
+                    c[field]=invalid
+                    with self.assertRaisesRegex(ValueError,field+'_mismatch'):d.reading_card(c)
+
+    def test_highlight_tags_keep_navigation_and_incomplete_guards(self):
+        for passage,held in (('Visit the documentation.',False),('Available only to:',True)):
+            c=self.card(highlights=['A fictional tool reviews changes.',passage])
+            c['highlight_rules']=[[],['section:important notes']]
+            view=d.reading_card(c)
+            self.assertEqual(view['held'],held)
+            self.assertNotIn(passage,view['highlights'])
+
     def test_zero_semantics_when_claimed_retained(self):
         p='Empty arrays mean zero matching activity; null means unavailable.'
         c=self.card(highlights=['The dashboard distinguishes zero from unavailable.'],conditions=[p])

@@ -26,3 +26,16 @@ replay the two saved responses with zero additional model requests or sends;
 require new negative-context regression cases and the full offline suite. Keep
 the initial failed live result separate from the repaired offline evidence.
 Source publication is not private runtime or unattended delivery promotion.
+
+### 0.8.1 final review
+
+Six additional synthetic tests cover nested/spanning tables, hidden table state,
+selected protected field passages, malformed parallel rule lists and unchanged
+navigation/incomplete-highlight guards. Five tests reproduced defects before
+correction; the guard test is preventive. All 270 offline tests pass, including
+with real socket connections and process launches blocked. Run both demos and
+isolated source-only initialization/build before committing the final candidate.
+The independently frozen 512/1024-budget arms use commit 8065f2e, not these later
+corrections; report live measurements and final offline verification separately.
+Keep all failed/empty/security-edge outcomes in the experiment report. A passing
+software suite does not establish semantic reliability or justify deployment.
