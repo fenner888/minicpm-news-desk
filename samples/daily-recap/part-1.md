@@ -1,8 +1,8 @@
-**☕ Cheryl’s AI & Tech Brief** · 1/1
+**☕ MiniCPM News Desk** · 1/1
 
 **SYNTHETIC DEMO — fictional, hand-authored; zero model calls**
 
-Prepared Sep 18, 12:08 PM EDT
+Prepared Sep 21, 09:57 AM EDT
 
 Historical source window: Sep 17, 08:00 AM EDT → Sep 18, 08:00 AM EDT
 

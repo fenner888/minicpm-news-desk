@@ -19,3 +19,4 @@ config.local.json
 # Bundled fictional examples are intentionally shareable.
 !samples/**/index.html
 !samples/daily-recap/supporting-report.html
+!samples/daily-recap/preview.html

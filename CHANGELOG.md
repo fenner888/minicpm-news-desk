@@ -2,6 +2,28 @@
 
 Public package versions; updating source does not automatically update a private deployment.
 
+## 0.8.0 — September 21, 2026
+
+- Preserve operators, paths, commands and Markdown literals using safe output
+  escaping; protect tested licensing/prohibition clauses with policy v5.
+- Add opt-in public RSS collection, build/preview, explicit Telegram approval/send,
+  owner-only locked state and known-unsent cancellation/receipt reconciliation.
+- Configurable public title/timezone; unchanged private-library defaults.
+- Add inert HTML preview, full fictional sample sources and responsive report rows.
+- Add public setup instructions, disabled scheduler example and pinned offline CI.
+- Retain complete, hash-verified `To prepare:` context instead of unnecessarily
+  withholding a brief. Incomplete/ambiguous/oversized restriction lists stay held.
+- 257 offline tests pass; both registered feeds fetched successfully after new
+  compatibility regressions. Two fresh local requests and a confirmed Telegram
+  test exposed the preparation-context issue; both saved responses pass after
+  the deterministic repair. The repaired output was not sent again.
+- Source publication is owner-approved. No private promotion or schedule change;
+  unattended operation and broader model reliability are not established.
+
+Packet hashes change with policy v5. Retain older artifacts as historical evidence.
+Do not deploy the new escaped Markdown into an old sender without validating its
+rendering path; the public sender includes the matching safe HTML renderer.
+
 ## 0.7.5 — September 18, 2026
 
 - Preserve qualifications in model-selected navigation/API-field passages, plus

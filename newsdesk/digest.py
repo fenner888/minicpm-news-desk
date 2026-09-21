@@ -19,7 +19,7 @@ import uuid
 from zoneinfo import ZoneInfo
 from . import facts as f, workflow as w
 
-VERSION='0.7.5'
+VERSION='0.8.0'
 ZONE=ZoneInfo('America/New_York')
 MAX_STORIES=9
 MAX_DETAILED=4
@@ -54,11 +54,18 @@ def url(value):
 
 
 def clean(value):
+    """Inert Markdown text: preserve visible syntax instead of deleting it.
+
+    Numeric entities keep source Markdown from becoming formatting. Consumers
+    must render this once, not decode and re-parse it as trusted Markdown.
+    Source URLs/directives are deliberately neutralized; links are app-owned.
+    """
     value=re.sub(r'\b(?:https?://|www\.)\S+','(link omitted)',str(value))
     value=re.sub(r'\bMEDIA\s*:', 'MEDIA ',value,flags=re.I)
-    value=''.join(c if c.isalnum() or c in " .,;:_'’“”()?—–-%$€£+&" else ' ' for c in value)
+    value=''.join(c if ord(c)>=32 and c not in '\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069\x7f' else ' ' for c in value)
     value=' '.join(value.split())
-    return re.sub(r'\b[a-zA-Z][a-zA-Z0-9]*_[a-zA-Z0-9_]+\b',lambda m:'`'+m[0]+'`',value)
+    value=html.escape(value,quote=False)
+    return ''.join('&#'+str(ord(c))+';' if c in '*_`[]\\@#!' else c for c in value)
 
 
 def source_link(value):
@@ -79,15 +86,15 @@ def reading_paragraphs(passages):
     return paragraphs
 
 
-def cutoff(now):
-    local=datetime.fromtimestamp(stamp(now),ZONE)
+def cutoff(now,zone=ZONE):
+    local=datetime.fromtimestamp(stamp(now),zone)
     return local.replace(hour=8,minute=0,second=0,microsecond=0).timestamp()
 
 
-def next_cutoff(now):
-    due=cutoff(now)
+def next_cutoff(now,zone=ZONE):
+    due=cutoff(now,zone)
     if due<=now:
-        due=(datetime.fromtimestamp(due,ZONE)+timedelta(days=1)).timestamp()
+        due=(datetime.fromtimestamp(due,zone)+timedelta(days=1)).timestamp()
     return due
 
 
@@ -129,7 +136,8 @@ def rank(item):
 
 
 class Store:
-    def __init__(self,path):
+    def __init__(self,path,zone=ZONE):
+        self.zone=zone
         self.db=sqlite3.connect(path,timeout=10)
         self.db.row_factory=sqlite3.Row
         self.db.executescript('''
@@ -149,7 +157,7 @@ class Store:
     def close(self):self.db.close()
 
     def initialize(self,now):
-        with self.db:self.db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)',('first_due',str(next_cutoff(now))))
+        with self.db:self.db.execute('INSERT OR IGNORE INTO meta VALUES (?,?)',('first_due',str(next_cutoff(now,self.zone))))
 
     def ingest(self,items,now):
         if not isinstance(items,list) or len(items)>30000:raise ValueError('intake_limit')
@@ -166,7 +174,7 @@ class Store:
         start=until-86400;rows=[];duplicates=set();latest={};delivered_keys=set()
         def event_key(i):
             return (i['source'],re.sub(r'\W+',' ',i['title']).lower().strip(),
-                    datetime.fromtimestamp(event_time(i),ZONE).date().isoformat(),i.get('changed_observed_at'))
+                    datetime.fromtimestamp(event_time(i),self.zone).date().isoformat(),i.get('changed_observed_at'))
         for r in self.db.execute('SELECT payload,delivered_edition,created_at FROM stories ORDER BY created_at,id'):
             i=json.loads(r['payload']);t=event_time(i)
             if i['first_seen']>observed_until:continue
@@ -183,21 +191,30 @@ class Store:
             if key not in duplicates and key not in delivered_keys:result.append(i);duplicates.add(key)
         return result
 
-    def claim(self,now,force=False):
+    def claim(self,now,force=False,current_window=False):
         self.initialize(now)
-        due=cutoff(now)
+        due=stamp(now) if current_window else cutoff(now,self.zone)
         first=float(self.db.execute("SELECT value FROM meta WHERE key='first_due'").fetchone()[0])
         if not force and (now<due or due<first):return None
-        day=datetime.fromtimestamp(due,ZONE).date().isoformat()
+        day=datetime.fromtimestamp(due,self.zone).date().isoformat()
         with self.db:
             self.db.execute('BEGIN IMMEDIATE')
             # Never create a new edition while a previous send needs reconciliation.
-            if self.db.execute("SELECT 1 FROM editions WHERE status!='delivered'").fetchone():return None
+            if self.db.execute("SELECT 1 FROM editions WHERE status NOT IN ('delivered','cancelled')").fetchone():return None
             if self.db.execute('SELECT 1 FROM editions WHERE day=?',(day,)).fetchone():return None
             items=self.candidates(due,now);eid=str(uuid.uuid4())
             self.db.execute('INSERT INTO editions VALUES (?,?,?,?,?,?,0,?,?)',
                 (eid,day,due,'preparing',json.dumps([i['id'] for i in items[:MAX_STORIES]]),None,now,now))
         return {'id':eid,'day':day,'cutoff':due,'items':items[:MAX_STORIES],'eligible':len(items),'overflow':max(0,len(items)-MAX_STORIES)}
+
+    def cancel_unsent(self,eid,now):
+        """Abandon known-unsent work; retain history and the day's budget lock."""
+        with self.db:
+            self.db.execute('BEGIN IMMEDIATE')
+            if self.db.execute('SELECT 1 FROM deliveries WHERE edition=?',(eid,)).fetchone():
+                raise ValueError('delivery_exists_reconcile_required')
+            result=self.db.execute("UPDATE editions SET status='cancelled',updated_at=? WHERE id=? AND status IN ('preparing','ready')",(stamp(now),eid))
+            if result.rowcount!=1:raise ValueError('edition_not_cancellable')
 
     def reserve_model(self,eid,now):
         with self.db:
@@ -255,6 +272,26 @@ def verified_card(article,packet,card):
             'source_body':article['body'],'selected_ids':[b['id'] for b in selected]}
 
 
+def preparation_context(card,paragraph):
+    """Recover only a complete, bounded preparation passage from verified source."""
+    if not re.search(r'\bTo prepare:\s*$',paragraph):return None
+    body=card.get('source_body')
+    if not isinstance(body,str) or len(body)>f.POLICY['budgets']['source']:return None
+    if hashlib.sha256(body.encode()).hexdigest()!=card.get('source_sha256'):return None
+    rows=[b['text'] for b in f.blocks(body)]
+    if rows.count(paragraph)!=1:return None
+    following=[]
+    for value in rows[rows.index(paragraph)+1:]:
+        if f.is_heading(value):break
+        # Do not guess the end of a truncated sentence or nested list.
+        if not value.endswith(('.', '!', '?')) or value.endswith(('...', '…')):return None
+        following.append(value)
+    if not following:return None
+    combined=' '.join([paragraph]+following)
+    if units(clean(combined))>1400:return None
+    return combined,following
+
+
 def reading_card(card):
     """Conservative extractive reading layer; never a semantic guarantee.
 
@@ -266,7 +303,7 @@ def reading_card(card):
     material=re.compile(r'[$€£]\s*\d|\b(?:pricing|costs?|billed|billing|subscription|available (?:only |to |in )|invited|eligible|requires?|must|permission|does not apply|not added to|private or internal|enforc\w*|deadline|until|starting|beginning|November|December|January|February|March|April|May|June|July|August|September|October)\b',re.I)
     navigation=re.compile(r'^(?:To get started|To learn more|Visit |For (?:more|further) (?:details|information)|Learn more|Read (?:the|our) (?:docs|documentation))',re.I)
     safety=re.compile(r'\b(?:leaks?|credentials?|exfiltrat\w*|unsafe|cannot|unless|consent|retention|not (?:available|supported)|limited to|only works|supports? only)\b',re.I)
-    dates_or_migration=re.compile(f.POLICY['rules']['effective_dates']+'|'+f.POLICY['rules']['migration_guidance'],re.I)
+    dates_or_migration=re.compile('|'.join(f.POLICY['rules'][k] for k in ('effective_dates','migration_guidance','licensing_restrictions')),re.I)
     def qualified(p):
         return bool(material.search(p) or safety.search(p) or dates_or_migration.search(p))
     for position,p in enumerate(card['highlights']):
@@ -277,14 +314,20 @@ def reading_card(card):
         elif position and re.match(r'^`?[A-Za-z]\w*_\w+`?\s*:',p) and not qualified(p):reason='field_reference_not_overview'
         if reason:audit.append({'text':p,'placement':'report','reason':reason})
         else:highlights.append(p);audit.append({'text':p,'placement':'brief','reason':'model_selected_overview'})
-    mentioned=identifiers(' '.join(highlights))
+    mentioned=identifiers(' '.join(highlights));covered=set()
     for p in card['conditions']:
         reason=None;fields=identifiers(p)
-        if p in highlights or p in conditions:reason='already_shown'
+        if p in highlights or p in conditions or p in covered:reason='already_shown'
         elif p.rstrip().endswith(':'):
+            expanded=preparation_context(card,p)
+            if expanded:
+                combined,following=expanded
+                conditions.append(combined);covered.update(following)
+                audit.append({'text':combined,'placement':'brief','reason':'complete_preparation_context'})
+                continue
             reason='list_introduction_requires_context'
             # A restrictive introduction cannot safely be detached from its list.
-            if re.search(r'\b(?:only|must|require\w*|except|unless|limited|cost\w*)\b',p,re.I):held=True
+            if qualified(p) or re.search(r'\b(?:only|must|require\w*|except|unless|limited|cost\w*)\b',p,re.I):held=True
         elif navigation.search(p) and not qualified(p):reason='navigation_not_news'
         elif re.match(r'^To prepare for ',p,re.I) and not re.search(r'\d|\b(?:must|only|unless|cost|price)\b',p,re.I):reason='procedural_reference'
         elif re.match(r'^Empty (?:arrays|fields)\b',p,re.I) and not re.search(r'\b(?:null|zero|empty|absent)\b',' '.join(highlights),re.I):reason='unmentioned_missing_value_semantics'
@@ -297,7 +340,7 @@ def reading_card(card):
     return {'highlights':highlights,'conditions':conditions,'audit':audit,'held':held or not highlights}
 
 
-def supporting_report(edition,cards):
+def supporting_report(edition,cards,title='Cheryl’s AI & Tech Brief'):
     """Private full-detail artifact; escape all source content; no scripts/assets."""
     esc=html.escape;sections=[]
     for item in edition['items']:
@@ -305,15 +348,17 @@ def supporting_report(edition,cards):
         if card is None:continue
         if url(card['url'])!=item['url']:raise ValueError('card_identity_mismatch')
         view=reading_card(card)
-        rows=''.join('<tr><td>'+esc(r['placement'])+'</td><td>'+esc(r['reason'])+'</td><td>'+esc(r['text'])+'</td></tr>' for r in view['audit'])
+        rows=''.join('<tr><td data-label="Placement">'+esc(r['placement'])+'</td><td data-label="Reason">'+esc(r['reason'])+'</td><td data-label="Passage">'+esc(r['text'])+'</td></tr>' for r in view['audit'])
         sections.append('<section><h2>'+esc(item['title'])+'</h2><p><a rel="noreferrer" href="'+esc(item['url'],quote=True)+'">Original source</a></p><h3>Editorial decisions</h3><table>'+rows+'</table><h3>Complete extracted source</h3><pre>'+esc(card.get('source_body','Full source unavailable in this fixture.'))+'</pre></section>')
-    return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'"><title>Cheryl — supporting report</title><style>body{max-width:960px;margin:32px auto;padding:0 20px;font:16px/1.6 system-ui;background:#faf8f1;color:#24372e}section{border-top:1px solid #ccc;margin-top:32px}pre,td{white-space:pre-wrap;overflow-wrap:anywhere}td{padding:10px;vertical-align:top;border-bottom:1px solid #ddd}table{width:100%;border-collapse:collapse}</style><h1>Cheryl’s AI &amp; Tech Brief — supporting report</h1><p>Exact extracted source and editorial placement decisions. Source claims require review; no independent fact-check is implied.</p>'+''.join(sections)+'</html>'
+    return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'"><title>'+esc(title)+' — supporting report</title><style>body{max-width:960px;margin:32px auto;padding:0 20px;font:16px/1.6 system-ui;background:#faf8f1;color:#24372e}section{border-top:1px solid #ccc;margin-top:32px}pre,td{white-space:pre-wrap;overflow-wrap:anywhere}td{padding:10px;vertical-align:top;border-bottom:1px solid #ddd}table{width:100%;border-collapse:collapse}@media(max-width:600px){table,tbody,tr,td{display:block}tr{padding:12px 0;border-bottom:1px solid #ccc}td{border:0;padding:4px 0}td:before{content:attr(data-label) ": ";font-weight:600}}</style><h1>'+esc(title)+' — supporting report</h1><p>Exact extracted source and editorial placement decisions. Source claims require review; no independent fact-check is implied.</p>'+''.join(sections)+'</html>'
 
 
 def units(s):return len(s.encode('utf-16-le'))//2
 
 
-def split_parts(paragraphs):
+def split_parts(paragraphs,title='Cheryl’s AI & Tech Brief'):
+    text(title,120)
+    if units(clean(title))>250:raise ValueError('title_requires_review')
     bodies=[];current=[]
     for p in paragraphs:
         if units(p)>PART_UNITS:raise ValueError('paragraph_requires_review')
@@ -322,7 +367,7 @@ def split_parts(paragraphs):
         current.append(p)
     if current:bodies.append('\n\n'.join(current))
     if len(bodies)>MAX_PARTS:raise ValueError('edition_requires_review')
-    return [f'**☕ Cheryl’s AI & Tech Brief** · {i}/{len(bodies)}\n\n'+body for i,body in enumerate(bodies,1)]
+    return [f'**☕ {clean(title)}** · {i}/{len(bodies)}\n\n'+body for i,body in enumerate(bodies,1)]
 
 
 def story_blocks(paragraphs,title):
@@ -346,13 +391,13 @@ def story_blocks(paragraphs,title):
     return result
 
 
-def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None,live_test=False,descriptions=None):
+def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=None,live_test=False,descriptions=None,title='Cheryl’s AI & Tech Brief',zone=ZONE):
     if preview and live_test:raise ValueError('ambiguous_preview_origin')
     items=edition['items'];failures=failures or {};descriptions=descriptions or {};start=edition['cutoff']-86400
-    def date(t):return datetime.fromtimestamp(t,ZONE).strftime('%b %d, %I:%M %p %Z')
+    def date(t):return datetime.fromtimestamp(t,zone).strftime('%b %d, %I:%M %p %Z')
     views={key:reading_card(card) for key,card in cards.items()}
     detailed=[i for i in items if i['id'] in views and not views[i['id']]['held']][:MAX_DETAILED]
-    heading=datetime.fromtimestamp(edition['cutoff'],ZONE).strftime('%A, %B %d')
+    heading=datetime.fromtimestamp(edition['cutoff'],zone).strftime('%A, %B %d')
     if preview:
         generated=time.time() if generated_at is None else stamp(generated_at)
         introduction=['**PREVIEW — saved results; not a new model run**',
@@ -409,7 +454,7 @@ def render(edition,cards,failures=None,coverage=None,preview=False,generated_at=
     if not preview:
         blocks.append('*'+('Live test · daily recap schedule unchanged.\n' if live_test else '')+
                       'Window: '+date(start)+' → '+date(edition['cutoff'])+'*')
-    return split_parts(blocks)
+    return split_parts(blocks,title)
 
 
 def demo(out):
@@ -427,12 +472,16 @@ def demo(out):
     for item in edition['items'][:4]:
         cards[item['id']]={'url':item['url'],'highlights':['This is fictional demonstration text, not a real announcement or model result.','Teams can turn a change list into a checklist for human review.'],
             'conditions':['Available only to invited teams. A person must approve the result.']}
+        cards[item['id']]['source_body']='\n'.join(cards[item['id']]['highlights']+cards[item['id']]['conditions'])
     from .quickhits import collect
     descriptions,_=collect(edition['items'],cards,{},0)
-    parts=render(edition,cards,preview=True,descriptions=descriptions)
+    title='MiniCPM News Desk'
+    parts=render(edition,cards,preview=True,descriptions=descriptions,title=title)
     parts=[p.replace('**PREVIEW — saved results; not a new model run**','**SYNTHETIC DEMO — fictional, hand-authored; zero model calls**') for p in parts]
     for i,part in enumerate(parts,1):w.atomic(out/f'part-{i}.md',part)
-    w.atomic(out/'supporting-report.html',supporting_report(edition,cards))
+    w.atomic(out/'supporting-report.html',supporting_report(edition,cards,title))
+    from .presentation import preview as preview_page
+    w.atomic(out/'preview.html',preview_page(parts,title))
     w.save(out/'manifest.json',{'version':VERSION,'synthetic':True,'model_calls':0,'delivery':'not_sent','parts':len(parts)})
     store.close()
     return len(parts)

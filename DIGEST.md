@@ -117,6 +117,15 @@ measured results and the separate pending scheduled-delivery observation.
 
 ## Integration example
 
+### September 21 candidate contract
+
+Public-readiness work adds a separate opt-in reference CLI (`newsdesk.daily`).
+Its state, collection, build, approval and recovery boundaries are specified in
+`specs/2026-09-21-public-readiness/`. No installation starts a schedule or sends.
+Technical punctuation must survive display escaping. Licensing and prohibition
+clauses are protected, but heuristic completeness still requires source review.
+The existing library defaults remain compatible with the private integration.
+
 ```python
 import time
 from newsdesk.digest import Store, render, verified_card, supporting_report
@@ -179,6 +188,40 @@ editions until the operator reconciles it. If all parts were confirmed but the
 process stopped before commit, `reconcile_confirmed(now)` safely commits without
 sending again. Do not delete reservation rows to manufacture a successful run.
 
+## Public reference workflow (0.8.0)
+
+The reading layer can retain a `To prepare:` paragraph together with its complete
+following source paragraphs, bounded to one reading paragraph. It requires the
+full source hash and an unambiguous match, and stops at the next recognized
+heading. Missing/truncated/nested/oversized context remains held; other unfinished
+restriction lists still require review. This is a narrow English structural rule,
+not proof of semantic completeness. The original model selection is unchanged.
+
+`newsdesk.daily` implements a separate fixed-feed reference workflow; see
+[REFERENCE-WORKFLOW.md](REFERENCE-WORKFLOW.md). GitHub and OpenAI RSS use the same
+public-IP/TLS/no-redirect transport with XML content types and a 45-second worker
+limit. Maximum 2 MB and 2,000 items per feed; feed requests are separate from the
+six article fetches per edition. Wrong-host/path links are excluded and counted.
+
+The builder uses existing article/selector code, persists full-source reports,
+and requests up to four local generations. Source-only quick hits use feed
+descriptions without extra fetches. Explicit switches gate network/inference.
+Failures remain labeled links and consume reserved attempts.
+
+Private state is owner-only with POSIX locking and fixes title/IANA timezone.
+Existing library defaults remain unchanged. Technical punctuation is escaped,
+not deleted; `presentation.telegram_html` identifies app-owned formatting before
+decoding source entities. Never decode then re-parse source as trusted Markdown.
+Licensing policy v5 changes packet hashes; old packets stay historical.
+
+Approval lasts 15 minutes and binds edition, messages, full report, bot identity
+and numeric chat. Credentials come only from operator environment. Approval is
+consumed before transport, each part reserved before sending, and confirmation
+requires a matching-chat provider receipt. No retries. `cancel-unsent` retains
+history/day locks and refuses any send reservation. Manual receipt confirmation
+is labeled operator-verified. Unknown sends block. No schedule is installed and
+no automatic approval is included.
+
 ## Public versus private
 
 The repository includes the portable queue/formatter, model selection code,
@@ -189,3 +232,4 @@ The original v0.6.1 synthetic selector samples remain historical fixtures. Their
 saved packets are not compatible with the current protection-policy hash; create
 a fresh packet from their synthetic article when exercising the current CLI.
 The bundled daily example is regenerated for the public package version.
+The reference collector/sender are new public code, not the owner's private adapters.

@@ -1,0 +1,15 @@
+# NOT INSTALLED. Review and replace paths before adding any scheduler entries.
+# Standard cron uses the machine's timezone; match it to init --timezone,
+# or use a scheduler with explicit IANA timezone support. CRON_TZ is not
+# portable to every cron implementation. Never assume your Mac honors it.
+# Use an absolute Python executable and private state. No automatic sending.
+#
+# Hourly collection:
+# 0 * * * * cd /absolute/path/to/minicpm-news-desk && /absolute/path/to/python3.14 -m newsdesk.daily --state /absolute/private/state collect --sources github --allow-network
+#
+# Daily 08:05 preparation (cutoff remains 08:00). Load the model key through
+# your scheduler's private environment, never this file or cron logs.
+# 5 8 * * * cd /absolute/path/to/minicpm-news-desk && /absolute/path/to/python3.14 -m newsdesk.daily --state /absolute/private/state build --allow-network --allow-local-inference --config /absolute/private/config.local.json
+#
+# Review preview.html and supporting-report.html, then explicitly approve/send.
+# Check exit status and status; a failed/uncertain edition blocks later builds.

@@ -42,7 +42,9 @@ keep secrets outside source records. Prepared, reserved and confirmed delivery
 are distinct; uncertain sends stay held. See DIGEST.md for the integration
 contract and responsibilities that the portable library cannot enforce itself.
 
-No scheduler, notifications or production model-server manager is included.
+No scheduler installation or production model-server manager is included.
+The optional reference CLI provides fixed-source RSS and explicit Telegram
+delivery, not an automatically enabled service. See REFERENCE-WORKFLOW.md.
 The package cannot establish that your own server is configured securely. Keep
 the server authenticated and loopback-only, review resource use, and stop on
 preflight or cleanup failure. The original test lifecycle is private infrastructure

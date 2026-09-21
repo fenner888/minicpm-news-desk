@@ -1,4 +1,108 @@
-# Evaluation — MiniCPM News Desk 0.7.5
+# Evaluation — MiniCPM News Desk 0.8.0
+
+## September 21 publication checkpoint
+
+The owner authorized Git publication after reviewing the acceptance findings.
+The preparation-context false hold below is repaired in the deterministic reading
+layer. Three new positive regression cases failed before the correction; all
+**257 offline tests** now pass, including incomplete, missing, hash-mismatched,
+ambiguous, nested and oversized context cases. General unfinished restriction
+lists remain held. No model prompt, selection packet or inference setting changed.
+
+The 257-test suite also passes with real socket connections and process launches
+blocked, and in a fresh 63-file export. Both offline demos, state initialization
+and source-only build pass from that export. The export allowlist, relative links,
+standard-library imports, targeted credential patterns and Git whitespace checks
+pass. This is a bounded automated review, not a security certification.
+
+Both original saved responses were revalidated against their source packets and
+replayed offline. Both produce usable briefs; migration dates, breakage warning,
+test/pinning instructions and relevant access/privacy qualifications survive.
+The repaired replay fits one 2,922-UTF-16-unit Markdown part, including its explicit
+saved-replay label. No text was cut to force that fit. Original failed output and
+delivery history remain intact. This is a known-case regression check, not new
+inference, a new Telegram delivery, a holdout or a general completeness guarantee.
+
+Public source release does not deploy to the owner's private runtime. Broader
+source evaluation, owner visual acceptance and scheduled-operation observation
+remain separate. The reference scheduler still collects/prepares only; per-edition
+Telegram approval remains explicit. The historical checkpoints below record what
+was known at each stage and do not supersede this current status.
+
+## September 21 actual local-model and Telegram acceptance
+
+**Initial result (before the offline repair above): hold publication.** The authorized live acceptance test found a formatter
+regression despite 250 offline tests passing on both Mac and Linux. Two newly
+fetched historical GitHub articles received fresh CPU-only MiniCPM selections.
+Both responses were valid and source-bound; selector completion took 36.54 and
+34.65 seconds (867 and 851 total tokens; the second reported 124 cached prompt
+tokens). Two observations on known cases are not a speed or accuracy benchmark.
+No inference retries or hosted calls occurred.
+
+The Ubuntu article was correctly selected but its brief was held because a
+protected paragraph ends in `To prepare:`. The full source contains the following
+guidance. The conservative incomplete-context formatter did not assemble that
+context, so it suppressed a useful brief rather than show it. This fails the
+two-brief acceptance gate. Fix with complete-context regression coverage; do not
+remove the safety check or regrade the source-only result as a success.
+
+One clearly labeled historical test edition reached the existing private Telegram
+chat through the candidate's actual HTML sender: one reviewed CLI-metrics brief
+and one held Ubuntu source link. Provider confirmation does not establish the
+owner's visual acceptance. Model/runtime identities were checked; the temporary
+runtime stopped and the original service remained healthy. Production code,
+archive, schedule and recipient configuration remained unchanged. No publication
+or deployment occurred. Both authorized model requests and the one-edition budget
+are consumed. The earlier offline checkpoint below is preserved as history.
+
+## September 21 public-readiness candidate
+
+Decision: offline implementation checks pass; **hold live-release acceptance**
+pending an explicitly approved local-model/test-chat run, human review and source
+publication. No private deployment or installed schedule changed in this pass.
+
+Baseline public 0.7.5 had 203 passing tests but failed new synthetic audit cases:
+technical operators/paths were removed in display, and a commercial-use prohibition
+outside the model pool could disappear without a hold. New policy v5/formatter
+cases reproduce those failures before the repair. The candidate has **250 passing
+offline tests**, also passing with real sockets and subprocess launches blocked.
+These are development/regression cases, not an untouched model holdout.
+
+Tests cover visible technical-text round trips, licensing paraphrases, incomplete
+restrictions, inert hostile markup, RSS identity/encoding/DTD/size checks, private
+state permissions and locks, attempt/fetch budgets, full mocked selection-to-report
+flow, report-save failure, changed content/bot/destination, approval expiry/reuse,
+partial confirmations, ambiguous send blocks and safe unsent cancellation. All
+critical permission/duplicate-send cases pass. Transport/model mocks are labeled
+as such; no real model generation or Telegram request was performed in this pass.
+
+Two real registered feed fetches succeeded after correcting two newly observed
+compatibility failures: GitHub embeds inert HTML doctypes inside CDATA, and OpenAI
+publishes more than 200 historical entries. XML DTDs outside text remain rejected;
+the bounded item limit is now 2,000 with a 2 MB response limit. GitHub intake accepted
+10 items; OpenAI accepted 1,143 and rejected 68 unsupported article links. These are
+feed-entry counts, **not today's news count or complete company coverage**. The
+current 24-hour test preview selected one source-only item, with zero article/model
+attempts and no delivery. Initial failed checks are not presented as successes.
+
+Both offline demos pass. The generated fictional report was inspected on desktop
+and at 390px mobile width; the supporting table now stacks labeled rows. The new
+preview screenshot is fictional, not a model outcome. Local documentation links,
+63-file export allowlist and standard-library import checks pass. A targeted
+credential-pattern scan finds no matches; this is not a security certification.
+
+Environment: Python 3.14.7 on the local Mac; candidate 0.8.0. Model/prompt/runtime
+settings remain as documented below, but the protection policy changes packet
+hashes. Baseline historical packets/results remain unchanged. CI is defined with
+pinned official action commits, but a local run is not a GitHub Actions result.
+
+Remaining gate: test the public commands with the actual local model, compare full
+source context, then explicitly approve and inspect a test-chat delivery. A later
+scheduled observation is separate. The reference example schedules collection and
+preparation only; automatic delivery approval is deliberately not included.
+Do not promote these offline counts into a model accuracy, savings or unattended
+reliability claim. Release decision owner: Mark; rollback is to keep the unchanged
+private runtime until separately approved promotion.
 
 ## September 18 deployed 0.7.5 and fresh Telegram delivery
 
@@ -272,7 +376,7 @@ were not measured. There is no controlled hosted-cost comparison or net savings
 claim. The earlier v0.5 five-call run took 21m50s; prompt/task changes prevent
 attributing the time difference solely to the reasoning cap.
 
-## Remaining limitations and acceptance
+## Historical v0.6.1 limitations and acceptance
 
 Source-protection rules are heuristics. The model may choose irrelevant passages
 or abstain unnecessarily; nonempty wrong selections are not universally detected.

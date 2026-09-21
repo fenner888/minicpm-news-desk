@@ -6,9 +6,10 @@ passages and explicit access, pricing and setup conditions.
 
 **Start with the [step-by-step setup guide](SETUP.md).** Try the layout without a
 model, then connect local MiniCPM for real article selection. Review source context
-before sharing an output. The portable package
-does not connect a Telegram account or install a schedule. A separate private
-integration runs the daily workflow; bring your own collector and delivery adapter.
+before sharing an output. The public reference workflow now includes fixed-source
+RSS collection, local build/preview, explicit Telegram sending and recovery commands.
+You supply your own local model and Telegram bot. Nothing installs a schedule,
+downloads weights or sends automatically.
 Project code is MIT licensed; see LICENSE. Model/runtime licenses remain separate.
 
 The original personal setup uses an Intel Core i5-9400F Linux desktop with 16 GB
@@ -17,18 +18,24 @@ sources hourly; the private integration is configured to send one Telegram recap
 of the previous 24 hours. This repository shares the reusable briefing logic,
 not the owner's collector, Telegram account or machine-specific configuration.
 That distinction also applies to screenshots of the actual Telegram test output.
+The new public workflow uses separate state and a smaller two-feed registry,
+not the private collector's 28 sources.
+
+![Fictional MiniCPM News Desk preview; zero model calls](samples/daily-recap/preview.png)
+
+The screenshot is a **fictional layout example**, not a fresh model result.
 
 ## Current evidence
 
-- **Public package 0.7.5:** 203 offline tests; includes a conservative fix for
-  qualified passages being mistaken for navigation or background text.
-- **Deployed and tested on 0.7.5:** 203 public tests plus 74 private integration
-  tests passed. Two fresh local MiniCPM requests completed in 37.27 and 40.16
-  seconds. Two model-derived briefs and seven source-only quick hits reached
-  Telegram in two confirmed messages, with no model retries or hosted fallback.
-- All nine portable Python modules match the public source. The existing daily
-  schedule and collector are unchanged. The first scheduled morning delivery
-  remains unobserved as of September 18; this was a manually triggered live test.
+- **0.8.0:** adds the public reference workflow and repairs technical-character
+  loss, tested licensing omissions and a preparation-context false hold.
+  **257 offline tests pass.** Two fresh local selections and one actual Telegram
+  delivery exercised the candidate; the subsequent formatter fix passed replay
+  of both saved responses, not another live send. See [EVALUATION.md](EVALUATION.md).
+- **Historical 0.7.5 private test:** two local-model briefs and seven source-only
+  quick hits reached Telegram in two confirmed messages. That evidence does not
+  certify the new sender, clean-install setup or unattended scheduling.
+- No private deployment or schedule is changed by pulling this repository.
 
 See [EVALUATION.md](EVALUATION.md) for evidence and limitations, and
 [CHANGELOG.md](CHANGELOG.md) for the differences between versions.
@@ -66,7 +73,7 @@ Try the fictional daily layout without a model or network:
 python3.14 -m newsdesk.digest demo --out outputs/daily-demo-1
 ```
 
-Open the generated part-1.md and supporting-report.html (additional parts are numbered). All content is
+Open the generated preview.html, part-1.md and supporting-report.html (additional parts are numbered). All content is
 fictional and hand-authored; the manifest records zero model calls. A shareable
 example is in [samples/daily-recap](samples/daily-recap).
 
@@ -142,9 +149,9 @@ An existing collector can supply --input to the snapshot command. Snapshot JSON:
 
 Dates are Unix seconds or null. Unknown release dates stay unknown. Snapshots
 are excerpt baselines, not full-article summaries. This package does not bundle
-the original private collector, scheduler, SSH access or Telegram integration.
-The new digest module supplies the portable archive, selection and delivery-state
-primitives for an integrator; it does not infer that a prepared message was sent.
+the original private collector, scheduler, SSH access or credentials. The separate
+`newsdesk.daily` reference CLI supplies a small public collection/build/send path;
+it does not infer that a prepared message was sent. See setup step 4.
 
 ## Optional local model selection
 
@@ -186,8 +193,9 @@ apply-selection can validate a saved response offline with --article, --config,
 - English heading/demo heuristics can miss context. Known instruction-like
   patterns hold the item but are not comprehensive injection detection.
 - No matching price passage does not mean free, unrestricted or unannounced.
-- No accounts, public API, UI dashboard or built-in messaging credentials. The
-  digest engine is local; live scheduling/delivery remain integration concerns.
+- No accounts, public API, UI dashboard or bundled messaging credentials.
+  Public `daily` commands support collection and explicit Telegram delivery;
+  schedule installation and unattended acceptance remain operator decisions.
 - Legacy free-prose library functions remain for regression compatibility; the
   CLI uses the ID-only selector. Read SECURITY.md for the trust boundaries.
 

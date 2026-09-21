@@ -3,6 +3,8 @@
 This repository is the portable public briefing toolkit, not its private runtime.
 Read README.md, DIGEST.md, SECURITY.md and EVALUATION.md before changing behavior.
 DIGEST.md is the daily-workflow contract; update it before changing that contract.
+Version 0.8.0 adds a separate opt-in reference workflow; read
+REFERENCE-WORKFLOW.md and specs/2026-09-21-public-readiness/ for its gates.
 
 ## Stack and scope
 

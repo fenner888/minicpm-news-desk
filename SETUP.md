@@ -8,11 +8,13 @@ selection. Run commands from the cloned repository folder.
 | --- | --- | --- |
 | See the briefing layout | Git, Python and timezone data | Step 1 |
 | Process a real supported article locally | Above, plus MiniCPM GGUF weights and llama.cpp | Step 2 |
-| Receive an automatic Telegram digest | Above, plus your own collector, scheduler and delivery adapter | Step 4 |
+| Collect, preview and send a digest | Above, plus your own Telegram bot and chat | Step 4 |
 
 The Telegram screenshots show the author's working private integration. Cloning
 this repository does **not** connect Telegram or start collecting news. The public
-package contains the source-processing, model-selection, archive and digest logic.
+package now includes a separate opt-in public workflow. It starts with two official
+RSS feeds, not the author's larger private collector. The reference integration
+requires Linux/macOS POSIX locking; Windows integration is not qualified.
 
 ## 1. Clone and see the demo
 
@@ -31,13 +33,14 @@ python3.14 -m unittest discover -s tests -v
 ```
 
 Expected: Python reports 3.14.7, the timezone check prints America/New_York, and
-**203 tests pass**. If the timezone check fails, install your OS's IANA timezone
+the test suite passes (current count in EVALUATION.md). If the timezone check fails, install your OS's IANA timezone
 data (commonly called `tzdata`) before continuing. If your Python executable has
 a different name, use its full path after checking the version.
 
 Open these files using your file manager:
 
-- `outputs/my-daily-demo/part-1.md`: numbered daily reading view.
+- `outputs/my-daily-demo/preview.html`: formatted daily reading view in a browser.
+- `outputs/my-daily-demo/part-1.md`: numbered Markdown payload.
 - `outputs/my-daily-demo/supporting-report.html`: supporting report in a browser.
 - `outputs/my-article-demo/index.html`: a single-article selection example.
 
@@ -168,27 +171,15 @@ terminal B. Your protected key file stays available for your next local session.
 
 ## 4. Add daily collection and Telegram delivery
 
-**This is a developer integration step, not another built-in CLI command.**
-There is no Telegram token field or one-click schedule installer in this package.
-To reproduce the author's personal workflow, supply these components:
+Follow [REFERENCE-WORKFLOW.md](REFERENCE-WORKFLOW.md). It provides runnable
+initialization, fixed-source collection, daily build, browser preview, explicit
+Telegram send and recovery commands—no custom adapter code required.
 
-1. **Collector:** check your chosen official sources hourly and produce validated
-   source items with title, URL, source identity and publication/discovery times.
-2. **Daily builder:** use the archive and edition logic in `newsdesk.digest` to
-   select the previous 24 elapsed hours at 08:00 America/New_York. Obtain supported
-   source-bound model cards; clearly label excerpts/headline-only items.
-3. **Delivery adapter:** store your own Telegram bot token and fixed destination
-   outside Git/model inputs, persist the report, split messages without losing
-   text, and record confirmed sends. Do not automatically retry uncertain sends.
-4. **Scheduler and validation:** set the repository root as working directory,
-   prevent concurrent runs, enforce budgets, test the actual end-to-end path and
-   separately check the first scheduled delivery before relying on it.
-
-Use [DIGEST.md](DIGEST.md) for the integration sketch, input schema, DST behavior,
-budgets and receipt state machine. It is explicitly a sketch: collector data,
-model cards and the sender are supplied by you. [OPERATIONS.md](OPERATIONS.md)
-covers source review, failures and rollback. No private collector, credentials,
-recipient details or machine-specific service files are distributed here.
+Start in isolated test state. The public collector supports the official GitHub
+changelog and OpenAI RSS feeds; it is not the author's private 28-source collector.
+No commands install a schedule or automatically approve a message. The reference
+sender requires explicit per-edition approval, and unattended use needs separate
+acceptance. Keep your model server running for inference-enabled builds.
 
 ## Common setup problems
 
@@ -200,6 +191,7 @@ recipient details or machine-specific service files are distributed here.
 | Authentication / model preflight failure | Both terminals use the same local key; alias, context, runtime and thinking settings match Step 2. Never print the key for debugging. |
 | Existing output folder | Choose a new `--out` path; keep prior results for comparison. |
 | Source is blocked, too long or unsupported | Keep it a labeled source link. Don't bypass checks or claim it was summarized. |
-| No Telegram message | The public CLI does not send one; Step 4 requires your own integration. |
+| No Telegram message | Build/approve do not send. Follow the reference send command and inspect status; never retry an uncertain send. |
+| Not due or blocked | Check status: normal first build is next morning, and unfinished editions block another. |
 
 For measured results and remaining limitations, see [EVALUATION.md](EVALUATION.md).

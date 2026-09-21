@@ -147,7 +147,9 @@ class Digest(unittest.TestCase):
 
     def test_markdown_and_directive_safety(self):
         value=d.clean('**bold** <b>hi</b> MEDIA:/tmp/key [[audio]] https://evil.test @all')
-        for bad in ['*','<','MEDIA:','/tmp','[[','https:','@']:self.assertNotIn(bad,value)
+        for bad in ['*','<','MEDIA:','[[','https:','@']:self.assertNotIn(bad,value)
+        # Paths must not be destroyed to neutralize an already removed directive.
+        self.assertIn('/tmp/key',value)
 
     def test_unsafe_urls(self):
         for value in ['http://example.com','https://user:secret@example.com','https://127.0.0.1/a','https://host.local/x','https://host.tail.ts.net','https://example.com/[x]']:
@@ -156,7 +158,7 @@ class Digest(unittest.TestCase):
     def test_no_fake_practical_section(self):
         e=self.edition();out=' '.join(d.render(e,{}))
         self.assertNotIn('Something to try',out);self.assertIn('headline',out.lower())
-        self.assertIn('**☕ Cheryl’s AI & Tech Brief**',out)
+        self.assertIn('**☕ Cheryl’s AI &amp; Tech Brief**',out)
         self.assertIn('Morning edition*',out)
         self.assertIn('**⚡ Quick hits**',out)
         item=e['items'][0]

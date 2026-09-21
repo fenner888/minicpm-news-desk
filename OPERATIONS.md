@@ -37,6 +37,12 @@ without resending; unresolved preparation/partial delivery requires operator rev
 
 ## Review checklist
 
+For the public 0.8.0 reference workflow, use [REFERENCE-WORKFLOW.md](REFERENCE-WORKFLOW.md)
+for status, known-unsent cancellation, explicit approval and observed-receipt
+reconciliation. It uses separate state and does not promote private services.
+An abandoned edition retains its daily budget lock; never reopen it by deleting
+rows. Scheduler examples prepare only and remain disabled until installed by you.
+
 1. Does the title/link identify the actual original source?
 2. Is the release date known? Do not mistake discovery time for publication.
 3. Does the overview communicate a concrete change, rather than generic marketing?

@@ -1,6 +1,7 @@
 # OpenBMB follow-up draft — not sent
 
-Updated September 18, 2026. This is a project update draft, not evidence of
+Historical draft from September 18, 2026; not the current release status.
+See README.md and EVALUATION.md for 0.8.0. This is not evidence of
 selection, endorsement, an award or a submitted follow-up.
 
 I've made MiniCPM News Desk public as an MIT-licensed local news briefing toolkit.

@@ -30,7 +30,7 @@ def fetch_direct(sid, url):
     return _public_html(url, SOURCES[sid][1])
 
 
-def _public_html(url, host):
+def _public_html(url, host, content_types=('text/html',)):
     """Internal transport; callers must enforce their fixed host/path contract."""
     address = public_addresses(host)[0]
     start = time.monotonic()
@@ -41,7 +41,7 @@ def _public_html(url, host):
         connection.sock = context.wrap_socket(raw_socket,server_hostname=host)
         connection.request('GET', urlsplit(url).path, headers={
             'User-Agent':'MiniCPM-News-Desk/0.6.2 source review',
-            'Accept':'text/html', 'Accept-Encoding':'identity'})
+            'Accept':', '.join(content_types), 'Accept-Encoding':'identity'})
         response = connection.getresponse()
         if response.status == 403 and response.getheader('cf-mitigated') == 'challenge':
             raise ValueError('http_status_403_challenge')
@@ -49,7 +49,7 @@ def _public_html(url, host):
             raise ValueError('http_status_' + str(response.status))
         if response.getheader('Content-Encoding','identity') not in ('identity',''):
             raise ValueError('compressed_response_rejected')
-        if response.getheader('Content-Type','').split(';')[0].strip().lower() != 'text/html':
+        if response.getheader('Content-Type','').split(';')[0].strip().lower() not in content_types:
             raise ValueError('not_html')
         size = response.getheader('Content-Length')
         if size and (not size.isdecimal() or int(size)>MAX_HTML):
@@ -135,7 +135,7 @@ def worker(mode, payload):
     if len(raw)>100000: raise ValueError('worker_input_size')
     result=subprocess.run([sys.executable,'-m','newsdesk.network',mode],
         input=raw,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
-        timeout=45 if mode=='fetch' else 480)
+        timeout=45 if mode in ('fetch','feed') else 480)
     if result.returncode or len(result.stdout)>3_000_000:
         raise ValueError('worker_failed')
     envelope=loads(result.stdout)
@@ -167,6 +167,11 @@ if __name__=='__main__':
             print(json.dumps({'body':base64.b64encode(body).decode()}))
         elif sys.argv[1:] == ['model']:
             print(json.dumps({'response':model_direct(request['config'],request['body'])}))
+        elif sys.argv[1:] == ['feed']:
+            from .feeds import FEEDS
+            target=FEEDS[request['source']]
+            body=_public_html(target,urlsplit(target).hostname,('application/rss+xml','application/xml','text/xml'))
+            print(json.dumps({'body':base64.b64encode(body).decode()}))
         else: raise ValueError('invalid_worker_mode')
     except Exception as exc:
         # Do not serialize URL/auth response text or exception details.
