@@ -5,6 +5,10 @@ Read README.md, DIGEST.md, SECURITY.md and EVALUATION.md before changing behavio
 DIGEST.md is the daily-workflow contract; update it before changing that contract.
 Version 0.8.0 adds a separate opt-in reference workflow; read
 REFERENCE-WORKFLOW.md and specs/2026-09-21-public-readiness/ for its gates.
+Version 0.8.1 contains deterministic repairs from a private frozen benchmark;
+the benchmark corpus, scores and raw results are private regression evidence
+and must not be tuned against or rescored. `REASONING_BUDGET` is a qualified
+runtime setting: changing it requires an authorized live evaluation.
 
 ## Stack and scope
 

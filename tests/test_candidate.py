@@ -58,6 +58,23 @@ class CoreTests(unittest.TestCase):
     def test_bad_nesting(self):
         with self.assertRaises(ValueError):c.extract('xai',URL,b'<div class="prose"><p>'+BODY.encode()+b'</div>')
 
+    def test_table_rows_stay_on_one_line(self):
+        # Benchmark v1 R04: pretty-printed cells became one block per cell, so
+        # model/date/replacement relationships were lost before selection.
+        cells=[('Model','Retirement date','Suggested alternative'),('Fictional A 1.0','2026-10-19','Fictional A 1.1')]
+        pretty='<table>\n<thead>\n<tr>\n'+'\n'.join('<th>'+v+'</th>' for v in cells[0])+'\n</tr>\n</thead>\n<tbody>\n<tr>\n'+'\n'.join('<td>'+v+'</td>' for v in cells[1])+'\n</tr>\n</tbody>\n</table>'
+        minified=pretty.replace('\n','')
+        nested='<table><tr><td><p>Fictional A 1.0</p></td><td><p>2026-10-19</p></td><td><p>Fictional A 1.1</p></td></tr></table>'
+        for label,table in (('pretty',pretty),('minified',minified),('nested',nested)):
+            with self.subTest(table=label):
+                # Trailing bare text after the table must not join the last row.
+                body=c.extract('github','https://github.blog/changelog/test',markup('github','<p>Retiring models:</p>'+table+'Update workflows first.'))['body']
+                lines=body.split('\n')
+                self.assertIn('Fictional A 1.0 | 2026-10-19 | Fictional A 1.1',lines)
+                if label!='nested':self.assertIn('Model | Retirement date | Suggested alternative',lines)
+                self.assertEqual(lines[0],'Retiring models:');self.assertEqual(lines[-1],'Update workflows first.')
+                self.assertNotIn('2026-10-19',[l.strip() for l in lines])
+
     def test_excludes_unsafe_or_hidden_content(self):
         raw=b'<div class="prose"><p>'+BODY.encode()+b'</p><script>BAD</script><nav>BAD</nav><div hidden>BAD</div><span aria-hidden="true">BAD</span><i style="display:none">BAD</i><iframe>BAD</iframe></div>'
         self.assertNotIn('BAD',c.extract('xai',URL,raw)['body'])

@@ -40,6 +40,26 @@ class SourcePreservation(unittest.TestCase):
         self.assertEqual([b['id'] for b in p['protected']],['b001','b002'])
         self.assertIn('context_for:b002',p['protected'][0]['rules'])
 
+    def test_fragments_and_unrecognized_headings_leave_pool(self):
+        # Benchmark v1: emoji/apostrophe/digit headings and bare table cells took
+        # lead pool slots (R01/R04/R06/R07/R08); the first-two baseline quoted them.
+        p=f.prepare(article('A fictional tool now shows review progress over time.\n🔍 Clearer progress at a glance\nWhat’s new\nUsing Fictional 26.04\n2026-10-19\nFictional A 1.0 | 2026-10-19 | Fictional A 1.1\nEach finding links to the relevant code so teams can act.\nShort sentence kept.'))
+        ids=[b['id'] for b in p['pool']]
+        self.assertEqual(ids,['b001','b007','b008'])
+        self.assertIn('b005',[b['id'] for b in p['protected']])
+        self.assertIn('b006',[b['id'] for b in p['protected']])
+        self.assertEqual(p['counts']['eligible_blocks_not_in_pool'],5)
+
+    def test_prerequisites_and_rejections_protected(self):
+        # Benchmark v1 R05: version prerequisites and a rejection clause were
+        # neither protected nor in the pool, so no brief could retain them.
+        body='A fictional registry adds stage-only automation tokens.\nA maintainer then reviews and approves the release. The registry rejects direct publish attempts with that token, even if bypass is configured.\nHow to start\nCreate the token.\nReplace the token in your workflow.\nAsk a maintainer to approve staged versions.\nIt works with existing packages. You’ll need publish access, 2FA enabled, Fictional CLI 11.15.0 or later, and Runtime 22.14.0 or later.'
+        p=f.prepare(article(body));rules={b['id']:b['rules'] for b in p['protected']}
+        self.assertIn('exclusions',rules.get('b002',[]))
+        self.assertIn('access_limits',rules.get('b007',[]))
+        plain,_=f.render(article(body),p,card(p,['b001']),'saved_response_unverified_origin')
+        for phrase in ('11.15.0 or later','22.14.0 or later','rejects direct publish'):self.assertIn(phrase,plain)
+
     def test_protected_overview_not_duplicated(self):
         a=article();p=f.prepare(a);value=card(p,['b004'])
         plain,_=f.render(a,p,value,'saved_response_unverified_origin')

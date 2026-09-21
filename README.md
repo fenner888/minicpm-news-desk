@@ -27,9 +27,14 @@ The screenshot is a **fictional layout example**, not a fresh model result.
 
 ## Current evidence
 
+- **0.8.1:** deterministic repairs from a private frozen benchmark of 0.8.0 that
+  did **not** show a coverage benefit over a no-model baseline: table rows kept
+  intact, fragments out of the selector pool, prerequisite/rejection protection
+  and protection reasons carried into the brief. **264 offline tests pass.** No
+  model, prompt or runtime setting changed; no new inference or send occurred.
 - **0.8.0:** adds the public reference workflow and repairs technical-character
   loss, tested licensing omissions and a preparation-context false hold.
-  **257 offline tests pass.** Two fresh local selections and one actual Telegram
+  257 offline tests passed. Two fresh local selections and one actual Telegram
   delivery exercised the candidate; the subsequent formatter fix passed replay
   of both saved responses, not another live send. See [EVALUATION.md](EVALUATION.md).
 - **Historical 0.7.5 private test:** two local-model briefs and seven source-only

@@ -5,9 +5,11 @@ from newsdesk import digest as d
 
 
 class Editorial(unittest.TestCase):
-    def card(self,highlights=None,conditions=None):
-        return {'url':'https://example.com/news','highlights':highlights or ['A tool helps teams review changes.'],
-                'conditions':conditions or [],'source_body':'Complete original source <script>unsafe()</script>'}
+    def card(self,highlights=None,conditions=None,condition_rules=None):
+        value={'url':'https://example.com/news','highlights':highlights or ['A tool helps teams review changes.'],
+               'conditions':conditions or [],'source_body':'Complete original source <script>unsafe()</script>'}
+        if condition_rules is not None:value['condition_rules']=condition_rules
+        return value
 
     def edition(self):
         until=datetime(2026,9,18,8,tzinfo=d.ZONE).timestamp()
@@ -62,6 +64,29 @@ class Editorial(unittest.TestCase):
         c=self.card(highlights=['A tool helps teams review changes.','raw_count: Includes every attempt.'])
         view=d.reading_card(c);self.assertEqual(len(view['highlights']),1)
         self.assertIn('raw_count: Includes every attempt.',d.supporting_report(self.edition(),{'one':c}))
+
+    def test_important_note_or_exclusion_definition_stays_visible(self):
+        # Benchmark v1 R06/R07: the protection layer tagged these blocks from an
+        # Important notes section / exclusion clause; the reading layer dropped them.
+        note='For servers, interaction_count increases only on connect attempts. Failed attempts also count; repeated tool calls do not increase the count.'
+        definition='users_in_phase_28d reports the full rolling population as of that day.'
+        c=self.card(highlights=['A dashboard now shows feature engagement.'],conditions=[note,definition],
+                    condition_rules=[['definitions','exclusions','section:important notes'],['definitions']])
+        view=d.reading_card(c)
+        self.assertEqual(view['conditions'],[note])
+        self.assertEqual([a['reason'] for a in view['audit'] if a['text']==note],['protected_section_or_exclusion_retained'])
+        self.assertEqual([a['reason'] for a in view['audit'] if a['text']==definition],['unmentioned_api_field_detail'])
+
+    def test_untagged_cards_keep_previous_placement(self):
+        note='interaction_count increases only on connect attempts and counts failures.'
+        c=self.card(highlights=['A dashboard now shows feature engagement.'],conditions=[note])
+        self.assertFalse(d.reading_card(c)['conditions'])
+
+    def test_tag_does_not_rescue_navigation_or_hold(self):
+        c=self.card(conditions=['Visit the docs to get started.','Available only to:'],
+                    condition_rules=[['section:important notes'],['section:important notes']])
+        view=d.reading_card(c)
+        self.assertTrue(view['held']);self.assertFalse(view['conditions'])
 
     def test_zero_semantics_when_claimed_retained(self):
         p='Empty arrays mean zero matching activity; null means unavailable.'

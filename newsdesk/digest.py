@@ -19,7 +19,7 @@ import uuid
 from zoneinfo import ZoneInfo
 from . import facts as f, workflow as w
 
-VERSION='0.8.0'
+VERSION='0.8.1'
 ZONE=ZoneInfo('America/New_York')
 MAX_STORIES=9
 MAX_DETAILED=4
@@ -266,9 +266,11 @@ def verified_card(article,packet,card):
     selected=f.validate_card(article,packet,card)['highlights']
     if not selected:raise ValueError('no_model_highlights')
     visible={b['id'] for b in selected}
+    conditions=[b for b in packet['protected'] if b['id'] not in visible]
     return {'title':article['title'],'url':article['url'],'source_sha256':article['source_sha256'],
             'highlights':[b['text'] for b in selected],
-            'conditions':[b['text'] for b in packet['protected'] if b['id'] not in visible],
+            'conditions':[b['text'] for b in conditions],
+            'condition_rules':[list(b.get('rules',[])) for b in conditions],
             'source_body':article['body'],'selected_ids':[b['id'] for b in selected]}
 
 
@@ -315,8 +317,12 @@ def reading_card(card):
         if reason:audit.append({'text':p,'placement':'report','reason':reason})
         else:highlights.append(p);audit.append({'text':p,'placement':'brief','reason':'model_selected_overview'})
     mentioned=identifiers(' '.join(highlights));covered=set()
-    for p in card['conditions']:
-        reason=None;fields=identifiers(p)
+    # Protection reasons recorded by facts.prepare; older cards carry none.
+    rules=card.get('condition_rules') or [[] for _ in card['conditions']]
+    if len(rules)!=len(card['conditions']):raise ValueError('condition_rules_mismatch')
+    tagged=lambda index:any(r=='exclusions' or r.startswith('section:') for r in rules[index])
+    for index,p in enumerate(card['conditions']):
+        reason=None;fields=identifiers(p);retained='qualification_retained'
         if p in highlights or p in conditions or p in covered:reason='already_shown'
         elif p.rstrip().endswith(':'):
             expanded=preparation_context(card,p)
@@ -330,13 +336,16 @@ def reading_card(card):
             if qualified(p) or re.search(r'\b(?:only|must|require\w*|except|unless|limited|cost\w*)\b',p,re.I):held=True
         elif navigation.search(p) and not qualified(p):reason='navigation_not_news'
         elif re.match(r'^To prepare for ',p,re.I) and not re.search(r'\d|\b(?:must|only|unless|cost|price)\b',p,re.I):reason='procedural_reference'
+        # An important-notes section or exclusion clause outranks the
+        # unmentioned-definition heuristics below; navigation/holds are unchanged.
+        elif tagged(index):retained='protected_section_or_exclusion_retained'
         elif re.match(r'^Empty (?:arrays|fields)\b',p,re.I) and not re.search(r'\b(?:null|zero|empty|absent)\b',' '.join(highlights),re.I):reason='unmentioned_missing_value_semantics'
         elif re.match(r'^Plugin metrics count\b',p,re.I) and not re.search(r'\b(?:counts?|totals?|invocations?|interactions?)\b',' '.join(highlights),re.I):reason='unmentioned_count_relationship'
         elif re.match(r'^Active .+ code review means\b',p,re.I) and 'code review' not in ' '.join(highlights).lower():reason='unmentioned_feature_definition'
         elif fields and not fields.intersection(mentioned) and not qualified(p):reason='unmentioned_api_field_detail'
         elif re.search(r'\b(?:previously|commonly exploited)\b',p,re.I) and not qualified(p):reason='background_context'
         if reason:audit.append({'text':p,'placement':'report','reason':reason})
-        else:conditions.append(p);audit.append({'text':p,'placement':'brief','reason':'qualification_retained'})
+        else:conditions.append(p);audit.append({'text':p,'placement':'brief','reason':retained})
     return {'highlights':highlights,'conditions':conditions,'audit':audit,'held':held or not highlights}
 
 

@@ -8,20 +8,21 @@ from . import core as c
 
 CONTRACT = 'newsdesk-highlights-v2'
 POLICY = {
-    'version': 'protected-blocks-v5-licensing-restrictions',
+    'version': 'protected-blocks-v6-prerequisites-rejections',
     'rules': {
         'price': r'[$€£]\s*\d|\b(?:prices?|pricing|costs?|credits?|billing|subscriptions?|free)\b',
-        'access_limits': r'\b(?:available|availability|only|invited?|preview|approval|eligible|roll[ -]?out|roll(?:s|ed|ing)? out|markets?|US-based|international|opt[ -]?in(?:to)?|if enabled|limited|limits?|requires?|cannot|must|not yet|not supported|select advertisers|being tested)\b',
+        'access_limits': r'\b(?:available|availability|only|invited?|preview|approval|eligible|roll[ -]?out|roll(?:s|ed|ing)? out|markets?|US-based|international|opt[ -]?in(?:to)?|if enabled|limited|limits?|requires?|cannot|must|not yet|not supported|select advertisers|being tested|(?:you(?:[\'’]ll| will)|will) need|needs? to|or (?:later|newer|higher)|prerequisites?)\b',
         'setup_scope': r'/(?:new|memory|dream)\b|\b(?:first completed turn|after (?:a|the) turn|new sessions|current conversation|per project|global set)\b',
         'separation': r'\b(?:clearly labeled|independent answers|separate from|distinct from)\b',
-        'exclusions': r'\b(?:excluded?|left out|does not|do not|will not)\b',
+        'exclusions': r'\b(?:excluded?|left out|does not|do not|will not|reject(?:s|ed|ing)?|refuse(?:s|d)?)\b',
         'licensing_restrictions': r'\b(?:licen[sc](?:e[sd]?|ing)|prohibit\w*|forbidden|disallow\w*|may not|shall not|not permitted|not allowed|ineligible|restricted|non[ -]?commercial|research[ -]only|terms of use|terms of service|subject to)\b',
         'definitions': r'\b(?:at least|at most|up to|means|defined as|counts?|counted|denominator|numerator|omitted|absent|null|not measured|rolling \d+[ -]day)\b',
         'effective_dates': r'\b(?:(?:on|from|by|starting|beginning|until|after|before|between|through)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\b|(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}\b|\d{4}-\d{2}-\d{2}\b)',
         'migration_guidance': r'\b(?:migrat\w*|upgrad\w*)\b.*\b(?:break|test|pin|stay|remain|defer|delay)\b|\b(?:pin|stay on|remain on)\b.*\b(?:version|image|release|workflows?)\b',
     },
     'sections': ['availability','pricing','limitations','restrictions','license','licensing','acceptable use','usage restrictions','terms of use','new commands','getting started','access','requirements','important notes','new secure defaults'],
-    'pool': 'lead4_plus_first3_practical_use_blocks',
+    'pool': 'lead4_plus_first3_practical_use_blocks_excluding_short_fragments',
+    'fragment': {'min_chars':60,'terminal':'.!?'},
     'context': r'^(?:It\b|This\b|That\b|They\b|These\b|The app\b)',
     'injection': r'ignore (?:all |previous |the )?(?:instructions|task)|reveal (?:the |your )?(?:credentials|secrets)|<\|(?:system|im_start)\|>|\[INST\]',
     'demo_start': r'^~/|^[❯◆]|^Enter:|^Thought for|^Edit(?:src|tests|/)',
@@ -97,8 +98,12 @@ def prepare(article):
                 reasons.setdefault(previous['id'],[]).append('context_for:'+block['id'])
         previous=block
     protected=[dict(b,rules=sorted(set(reasons[b['id']]))) for b in all_blocks if b['id'] in reasons]
-    pool=candidates[:4]
-    extra=[b for b in candidates[4:] if re.search(r'\b(?:can|helps?|enables?|lets?|useful|able to)\b',b['text'],re.I)][:3]
+    # Unrecognized headings, table cells and other short fragments are not
+    # overview candidates; they remain eligible for protection and the report.
+    fragment=POLICY['fragment']
+    overview=[b for b in candidates if len(b['text'])>=fragment['min_chars'] or b['text'].endswith(tuple(fragment['terminal']))]
+    pool=overview[:4]
+    extra=[b for b in overview[4:] if re.search(r'\b(?:can|helps?|enables?|lets?|useful|able to)\b',b['text'],re.I)][:3]
     pool+=extra
     if len(protected)>limits['protected_blocks'] or sum(len(b['text']) for b in protected)>limits['protected_chars']:held.append('protected_detail_budget_exceeded')
     if len(pool)>limits['pool_blocks'] or sum(len(b['text']) for b in pool)>limits['pool_chars']:held.append('selector_pool_budget_exceeded')

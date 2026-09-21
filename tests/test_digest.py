@@ -186,6 +186,15 @@ class Digest(unittest.TestCase):
         self.assertIn('invited teams',' '.join(result['conditions']))
         with self.assertRaises(ValueError):d.verified_card(a,packet,{**card,'highlights':[]})
 
+    def test_verified_card_carries_protection_reasons_to_reading_view(self):
+        body='A fictional dashboard now shows feature engagement for teams.\nImportant notes\nusers_in_phase_28d is omitted when the population was not measured; 0 means measured with no users.\nThe engagement_summary object can be absent or null when the calculation is unavailable.'
+        a={'source':'synthetic','url':None,'title':'SYNTHETIC Example','body':body,'source_sha256':c.digest(body),'contract':c.CONTRACT,'published':None,'first_seen':None}
+        packet=f.prepare(a);result=d.verified_card(a,packet,{'packet_sha256':packet['packet_sha256'],'highlights':['b001']})
+        self.assertEqual(len(result['condition_rules']),len(result['conditions']))
+        self.assertTrue(all('section:important notes' in r for r in result['condition_rules']))
+        view=d.reading_card(result)
+        self.assertFalse(view['held']);self.assertEqual(view['conditions'],body.splitlines()[2:])
+
     def test_source_identity_mismatch(self):
         e=self.edition();cards={e['items'][0]['id']:{'url':'https://example.com/wrong','highlights':['x'],'conditions':[]}}
         with self.assertRaises(ValueError):d.render(e,cards)

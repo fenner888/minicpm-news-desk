@@ -110,6 +110,28 @@ moves to the supporting report; incomplete restrictive passages still hold the c
 
 This is a deterministic formatter correction, not a model/prompt/policy-hash or
 timing change. Six additional offline regression tests cover the affected paths.
+
+### Protection reasons reach the reading view in 0.8.1
+
+`verified_card` now carries each protected block's rule names as
+`condition_rules`, parallel to `conditions`. `reading_card` keeps a condition in
+the brief when its rules include a recognized section (`section:important notes`,
+`section:requirements`, …) or an exclusion clause, even if it defines an API
+field the highlights never mention; the audit reason is
+`protected_section_or_exclusion_retained`. Unmentioned field definitions without
+such a tag still move to the report. Navigation lines and unfinished restrictive
+introductions are unaffected. Cards without `condition_rules` (older private
+integrations, hand-authored fixtures) keep the previous placement exactly; a
+length mismatch between the two lists is rejected.
+
+Also in 0.8.1: the selector pool excludes blocks shorter than 60 characters
+without terminal `.`, `!` or `?` (unrecognized headings, bare table cells), the
+GitHub/xAI/OpenAI parser keeps one table row per line with ` | ` between cells,
+and protection policy v6 covers stated prerequisites (`you’ll need`, `or later`,
+`prerequisites`) and rejection clauses (`rejects`, `refuses`). Policy v6 changes
+packet hashes; old packets stay historical. These are deterministic changes
+identified from the private September 21 frozen benchmark; the model, prompt,
+runtime settings and reasoning budget are unchanged.
 The subsequent owner-approved deployment passed 203 public plus 74 private tests.
 Two fresh local-model briefs and seven source-only quick hits were delivered in
 two confirmed Telegram messages on 0.7.5. See [EVALUATION.md](EVALUATION.md) for

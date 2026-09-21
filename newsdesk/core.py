@@ -116,12 +116,18 @@ class ArticleParser(HTMLParser):
     VOID = set('area base br col embed hr img input link meta param source track wbr'.split())
     EXCLUDE = set('script style nav footer header aside noscript svg button iframe template'.split())
     BLOCK = set('p li h1 h2 h3 h4 h5 h6 div section br pre tr blockquote'.split())
+    CELL = {'td', 'th'}
 
     def __init__(self, sid):
         super().__init__(convert_charrefs=True)
         self.sid = sid; self.stack = []; self.parts = []
         self.target_depth = None; self.count = 0; self.closed = False
         self.title_depth = None; self.titles = []; self.title_count = 0
+        self.row_depth = None; self.cells = 0
+
+    def break_line(self, tag):
+        # One table row stays one line: cells are separated, never split.
+        self.handle_data('\n' if self.row_depth is None or tag == 'tr' else ' ')
 
     def handle_starttag(self, tag, attrs):
         d = dict(attrs); classes = d.get('class', '').split()
@@ -142,7 +148,13 @@ class ArticleParser(HTMLParser):
         if tag == 'h1' and not blocked:
             self.title_count += 1; self.title_depth = len(self.stack)
         if tag in self.BLOCK:
-            self.handle_data('\n')
+            self.break_line(tag)
+        if tag == 'tr':
+            self.row_depth = len(self.stack); self.cells = 0
+        elif tag in self.CELL and self.row_depth is not None:
+            if self.cells:
+                self.handle_data(' | ')
+            self.cells += 1
 
     def handle_startendtag(self, tag, attrs):
         self.handle_starttag(tag, attrs)
@@ -159,9 +171,13 @@ class ArticleParser(HTMLParser):
             positions = [i for i, s in enumerate(self.stack) if s[0] == tag]
             if positions:
                 del self.stack[positions[-1]:]
+                if self.row_depth is not None and self.row_depth > len(self.stack):
+                    self.row_depth = None
             return
+        if self.row_depth == len(self.stack):
+            self.row_depth = None
         if tag in self.BLOCK:
-            self.handle_data('\n')
+            self.break_line(tag)
         if self.title_depth == len(self.stack):
             self.title_depth = None
         if self.target_depth == len(self.stack):
@@ -171,6 +187,8 @@ class ArticleParser(HTMLParser):
     def handle_data(self, value):
         if any(s[1] for s in self.stack):
             return
+        if self.row_depth is not None:
+            value = value.replace('\r', ' ').replace('\n', ' ')
         if self.title_depth is not None:
             self.titles.append(value)
         if self.target_depth is not None:

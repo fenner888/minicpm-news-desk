@@ -1,4 +1,4 @@
-# Start here — MiniCPM News Desk 0.8.0
+# Start here — MiniCPM News Desk 0.8.1
 
 A local, source-linked AI/technology news review tool. MiniCPM picks useful source
 passages; deterministic code preserves restrictions and handles empty results.
@@ -18,8 +18,9 @@ Repository: https://github.com/fenner888/minicpm-news-desk
 Run commands from the cloned repository root. Python 3.14.7 and system timezone
 data are the tested prerequisites; the demo needs neither model weights nor keys.
 
-Version 0.8.0 includes 257 offline checks and a documented live acceptance test
-followed by a saved-response formatter repair. This is not unattended reliability
+Version 0.8.1 includes 264 offline checks, a documented live acceptance test of
+0.8.0, and deterministic repairs from a private frozen benchmark that did not show
+a coverage benefit over a no-model baseline. This is not unattended reliability
 evidence. The local collection/preview/send path uses separate state
 and explicit approval. Windows reference integration is not qualified; Linux/macOS
 POSIX file locking is required. Nothing installs a schedule automatically. See

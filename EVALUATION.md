@@ -1,6 +1,41 @@
-# Evaluation — MiniCPM News Desk 0.8.0
+# Evaluation — MiniCPM News Desk 0.8.1
 
-## September 21 publication checkpoint
+## September 21 frozen benchmark of 0.8.0 and deterministic repairs (0.8.1)
+
+A private frozen-set benchmark ran unchanged 0.8.0 on eight GitHub changelog
+articles (six new, two known regressions) plus four synthetic edge cases, each
+twice, with a no-model first-two-eligible baseline and assistant-authored
+annotations frozen before inference. Twenty local CPU-only calls completed; no
+retries, sends or hosted requests. Raw sources, reasoning and the corpus are
+private. Headline outcome: 13/16 detailed briefs; 75/126 preannotated units
+retained versus 78/126 for the baseline and 82/126 for a post-hoc sentence-filtered
+baseline; 58/58 emitted passages exact source spans; fetch-to-render median
+33.8 s, max 39.9 s. **The workflow did not meet its coverage targets and did not
+show an information-recall benefit over deterministic extraction on this set.**
+Do not cite these figures as model accuracy; the annotations are not independent
+human gold, the set is one publisher, and the precision review was not able to
+register a failure.
+
+An independent review of that evidence traced every missed unit to code and
+produced the 0.8.1 repairs listed in CHANGELOG.md: table rows kept on one line,
+short fragments and unrecognized headings excluded from the selector pool,
+protection policy v6 for prerequisites/rejections, and protection reasons carried
+into the reading view. Seven failing-first regressions were added; **264 offline
+tests pass** and both offline demos run. Replaying the benchmark's saved selections
+through the repaired preparation/reading layers raises the affected articles as
+recorded in CHANGELOG.md; the deprecation table is still correctly held because a
+list introduction followed by table rows has no complete-context assembly yet.
+
+Not changed: model, prompt, sampling, context and the 512-token reasoning budget.
+The benchmark showed 18 of 20 completions ending at that budget; the single
+unnecessary abstention ended mid-decision. Raising the budget is a new
+qualified-setting evaluation and needs explicit authorization and a live run.
+The frozen v1 corpus is preserved as regression evidence; a new annotated holdout
+across more than one publisher, with a preregistered sentence-filtered comparator
+and per-passage precision verdicts, is the next measurement. No private
+deployment, schedule or delivery changed with this version.
+
+## September 21 publication checkpoint (0.8.0)
 
 The owner authorized Git publication after reviewing the acceptance findings.
 The preparation-context false hold below is repaired in the deterministic reading

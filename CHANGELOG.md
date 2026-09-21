@@ -2,6 +2,40 @@
 
 Public package versions; updating source does not automatically update a private deployment.
 
+## 0.8.1 — September 21, 2026
+
+Deterministic repairs derived from the private frozen benchmark of 0.8.0
+(eight GitHub articles, two repeats, no-model baseline). No model, prompt,
+runtime setting or reasoning budget changed; no new inference was run.
+
+- Parser keeps one table row per line with ` | ` between cells; previously
+  pretty-printed cells became one block each and minified cells ran together,
+  so a deprecation table lost its model/date/replacement relationships.
+- Selector pool excludes short blocks without terminal punctuation. Emoji,
+  apostrophe or digit headings and bare table cells had occupied lead pool slots
+  in five of eight benchmark articles, and the first-two baseline quoted them.
+- Protection policy v6 adds stated prerequisites (`you’ll need`, `or later`,
+  `prerequisites`) and rejection clauses (`rejects`, `refuses`). A version/2FA
+  prerequisites paragraph and a direct-publish rejection had been neither
+  protected nor selectable.
+- `verified_card` carries protection rule names as `condition_rules`;
+  `reading_card` keeps important-notes-section or exclusion-tagged definitions in
+  the brief instead of moving them to the report. Untagged cards keep prior
+  placement.
+- 264 offline tests pass (seven new failing-first regressions). Offline replay of
+  the benchmark's saved selections through the new preparation/reading layers
+  retains 7/7 units on both npm-token runs (was 6 and 4), 6/7 on both
+  dashboard runs (was 4) and 5/7 on the CLI-metrics run (was 4); the deprecation
+  table remains correctly held. This is a replay against frozen text and saved
+  IDs, not a new benchmark; pool changes alter packet hashes, so the model may
+  select differently on a fresh run.
+
+Policy v6 changes packet hashes. Regenerate packets for explicit replay; retain
+older artifacts as historical evidence. `REASONING_BUDGET` stays 512: the
+benchmark found 18 of 20 completions ending at the budget, which is the leading
+hypothesis for one unnecessary abstention, but changing a qualified runtime
+setting requires a separately authorized live evaluation.
+
 ## 0.8.0 — September 21, 2026
 
 - Preserve operators, paths, commands and Markdown literals using safe output
