@@ -4,11 +4,17 @@ import html
 import json
 import re
 import time
+import unicodedata
 from . import core as c
+
+
+def instruction_word(word):
+    return r'\b'+r'[\W_]*'.join(word)+r'\b'
+
 
 CONTRACT = 'newsdesk-highlights-v2'
 POLICY = {
-    'version': 'protected-blocks-v6-prerequisites-rejections',
+    'version': 'protected-blocks-v7-instruction-holds',
     'rules': {
         'price': r'[$€£]\s*\d|\b(?:prices?|pricing|costs?|credits?|billing|subscriptions?|free)\b',
         'access_limits': r'\b(?:available|availability|only|invited?|preview|approval|eligible|roll[ -]?out|roll(?:s|ed|ing)? out|markets?|US-based|international|opt[ -]?in(?:to)?|if enabled|limited|limits?|requires?|cannot|must|not yet|not supported|select advertisers|being tested|(?:you(?:[\'’]ll| will)|will) need|needs? to|or (?:later|newer|higher)|prerequisites?)\b',
@@ -24,7 +30,15 @@ POLICY = {
     'pool': 'lead4_plus_first3_practical_use_blocks_excluding_short_fragments',
     'fragment': {'min_chars':60,'terminal':'.!?'},
     'context': r'^(?:It\b|This\b|That\b|They\b|These\b|The app\b)',
-    'injection': r'ignore (?:all |previous |the )?(?:instructions|task)|reveal (?:the |your )?(?:credentials|secrets)|<\|(?:system|im_start)\|>|\[INST\]',
+    'injection_normalization': {
+        'form': 'NFKC', 'strip': 'Unicode Cf and U+034F/U+FE0E/U+FE0F',
+        'confusables': {
+            'a':'аАαΑ', 'b':'вВβΒ', 'c':'сС', 'd':'ԁ', 'e':'еЕεΕ', 'h':'нНηΗ',
+            'i':'іІιΙӏ', 'j':'јЈ', 'k':'кКκΚ', 'm':'мМμΜ', 'n':'пΝ', 'o':'оОοΟ',
+            'p':'рРρΡ', 's':'ѕЅ', 't':'тТτΤ', 'v':'ν', 'x':'хХχΧ', 'y':'уУυΥ', 'z':'ζΖ',
+        },
+    },
+    'injection': '(?:'+instruction_word('ignore')+'|'+instruction_word('disregard')+r')\s+(?:(?:all|any|previous|prior|earlier|the|your|these|system)\s+){0,3}(?:'+ '|'.join(instruction_word(word) for word in ('instruction','instructions','task','tasks'))+r')|reveal\s+(?:(?:the|your)\s+)?(?:credentials|secrets)|<\|(?:system|im_start)\|>|\[inst\]|\b(?:(?:for|to|as)\s+(?:the\s+)?)?(?:excerpt|passage|highlight|quote)\s+(?:chooser|selector|ranker)\s*[:,]\s*[^.!?\n]{0,160}\b(?:prefer|select|choose|prioritize|disregard|ignore)\b',
     'demo_start': r'^~/|^[❯◆]|^Enter:|^Thought for|^Edit(?:src|tests|/)',
     'budgets': {'source':7000,'blocks':120,'block':2000,'protected_chars':5500,'protected_blocks':30,'pool_chars':4000,'pool_blocks':25,'selected_chars':1800},
 }
@@ -68,12 +82,19 @@ def is_heading(value):
     return bool(re.fullmatch(r'[A-Z][A-Za-z /-]{2,70}',value))
 
 
+def instruction_text(value):
+    rules=POLICY['injection_normalization']
+    value=unicodedata.normalize(rules['form'],value)
+    fold=str.maketrans({variant:letter for letter,variants in rules['confusables'].items() for variant in variants})
+    return ''.join(ch for ch in value.translate(fold).casefold() if unicodedata.category(ch)!='Cf' and ch not in '\u034f\ufe0e\ufe0f')
+
+
 def prepare(article):
     a=checked_article(article);body=a['body'];all_blocks=blocks(body);held=[];warnings=[]
     limits=POLICY['budgets']
     if len(body)>limits['source']:held.append('source_exceeds_selector_budget')
     if len(all_blocks)>limits['blocks'] or any(len(b['text'])>limits['block'] for b in all_blocks):held.append('block_budget_exceeded')
-    if re.search(POLICY['injection'],body,re.I):held.append('untrusted_instruction_pattern_requires_review')
+    if re.search(POLICY['injection'],instruction_text(body),re.I):held.append('untrusted_instruction_pattern_requires_review')
     if any(a[k] is not None and a[k]>time.time() for k in ('published','first_seen')):held.append('future_date_requires_review')
     if re.search(r'\b(?:today|now|tomorrow|yesterday|next week)\b',body,re.I):warnings.append('Relative dates are source quotations, not the report date. Publication date may be unknown.')
     candidates=[];reasons={};demo=False;section=None;ignored=[];previous=None

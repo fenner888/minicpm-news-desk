@@ -12,11 +12,22 @@ The command refuses existing output directories. With no output argument it uses
 a new timestamped directory under `$HOME/newsdesk-evals`. Curated, reviewed,
 synthetic-only evidence can be generated with
 `python3 -m evals run --evidence evals/evidence/my-new-run` and verified with
-`python3 -m evals verify evals/evidence/my-new-run`. The single committed baseline
+`python3 -m evals verify evals/evidence/my-new-run`. The committed baseline
 is `evals/evidence/2026-11-17-baseline`. Earlier unpublished synthetic logs were
 removed when the organization mappings and severity rationales were corrected.
 No real live calls occurred. New evidence files must be
 reviewed and added explicitly to EXPORT-ALLOWLIST.json before publication.
+
+`evals/evidence/2026-11-17-after-fixes` records the separate post-repair mock run.
+The baseline remains untouched historical evidence, not a holdout. The three
+injected-selection cases and three transformed-key cases now pass: normalized
+instruction holds stop selection before transport, and transformed-key rejection
+stops response persistence. Policy v7 changes packet hashes, not exact source
+quotations. Raw reasoning/response persistence and the legacy prose path remain
+unchanged; their findings remain documented. These heuristic instruction and
+known-key checks are not complete injection or data-loss prevention. Verifying
+the historical baseline under repaired code is expected to differ; verify the
+after-fixes directory against the repaired code instead. No real inference ran.
 
 ## What runs
 
