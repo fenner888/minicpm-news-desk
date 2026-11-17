@@ -283,6 +283,20 @@ class NetworkTests(unittest.TestCase):
                         with self.assertRaisesRegex(ValueError,'credential_echo'):
                             n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener)
 
+    def test_punctuation_heavy_key_does_not_match_preflight_id(self):
+        key='id!@#$%^&*()_+?!'
+        opener,calls=self.fake_opener()
+        with patch.dict(os.environ,{'MINICPM_API_KEY':key}):
+            result=n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener)
+        self.assertIn('choices',result)
+        self.assertEqual(len(calls),5)
+        for echo in (key,key[::-1],base64.b64encode(key.encode()).decode()):
+            with self.subTest(echo=echo):
+                opener,_=self.fake_opener(lambda path,p:{'echo':echo} if path=='/v1/chat/completions' else p)
+                with patch.dict(os.environ,{'MINICPM_API_KEY':key}):
+                    with self.assertRaisesRegex(ValueError,'credential_echo'):
+                        n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener)
+
     def test_secret_echo_check_allows_empty_and_unrelated_strings(self):
         for value in ('','A fictional tool uses base64 encoding and hyphen-separated labels.'):
             opener,_=self.fake_opener(lambda path,p:{'note':value} if path=='/v1/chat/completions' else p)
