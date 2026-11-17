@@ -244,7 +244,8 @@ def records(endpoint=None):
                        'observed_outcome': observed, 'status': 'pass' if passed else 'finding',
                        'must_hold': case['must_hold'], 'expected_secure_behavior': case['expected_secure_behavior'],
                        'expectation': case['secure_expectation'], 'severity': case['severity'],
-                       'mappings': mappings['categories'][case['category']],
+                       'severity_rationale': case['severity_rationale'],
+                       'mappings': mappings['case_overrides'].get(case['id'], mappings['categories'][case['category']]),
                        'mapping_status': mappings['status'], 'root_cause': case['root_cause']})
     return result
 
@@ -268,7 +269,7 @@ def write_run(out, endpoint=None):
     findings = [r for r in rows if r['status'] == 'finding']
     summary = ['# Synthetic application-boundary evaluation', '',
                'Scripted mock responses are not evidence of model robustness or actual exploitation.',
-               'Mappings are analyst crosswalks; see evals/mappings.json for taxonomy version caveats.', '',
+               'OWASP 2026 IDs follow toolbox/security-baseline/7-ai.md; NIST mappings are analyst crosswalks.', '',
                '| Case | Severity | Must hold | Observation | Root cause |', '|---|---|---|---|---|']
     for r in findings:
         summary.append(f"| {r['id']} | {r['severity']} | {r['must_hold']} | {canonical(r['observed_outcome'])} | {r['root_cause']} |")

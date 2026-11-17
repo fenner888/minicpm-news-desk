@@ -8,12 +8,6 @@
     "evals/runner.py",
     "evals/cases.json",
     "evals/mappings.json",
-    "evals/evidence/synthetic-v1/evidence.jsonl",
-    "evals/evidence/synthetic-v1/summary.md",
-    "evals/evidence/synthetic-v1/manifest.json",
-    "evals/evidence/synthetic-v2/evidence.jsonl",
-    "evals/evidence/synthetic-v2/summary.md",
-    "evals/evidence/synthetic-v2/manifest.json",
     "tests/test_evals.py",
     ".github/workflows/offline.yml",
     "REFERENCE-WORKFLOW.md",
@@ -77,6 +71,9 @@
     "samples/synthetic-fallback/index.html",
     "samples/synthetic-fallback/manifest.json",
     "samples/synthetic-fallback/packet.json",
-    "samples/synthetic-fallback/selection.json"
+    "samples/synthetic-fallback/selection.json",
+    "evals/evidence/2026-11-17-baseline/evidence.jsonl",
+    "evals/evidence/2026-11-17-baseline/summary.md",
+    "evals/evidence/2026-11-17-baseline/manifest.json"
   ]
 }

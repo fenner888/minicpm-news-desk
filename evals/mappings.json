@@ -1,9 +1,8 @@
 {
-  "status": "Provisional analyst crosswalk, not compliance certification. Requested OWASP edition: 2026 (not verified; offline task). IDs use the established OWASP LLM Top 10 2025 taxonomy and must not be cited as a verified 2026 publication. NIST labels/practices are suggested mappings, not assertions of full control implementation.",
+  "status": "Organization OWASP LLM Top 10 2026 IDs follow fenner888/toolbox security-baseline/7-ai.md (controls table and Hidden Context Exposure source link). NIST mappings are analyst crosswalks, not compliance certification.",
   "categories": {
     "prompt_injection": {
-      "owasp_requested_edition": "2026-unverified",
-      "owasp_id": "LLM01:2025",
+      "owasp_id": "LLM01:2026",
       "nist_ai_rmf": {
         "function": "MEASURE",
         "subcategory": "MEASURE 2.7"
@@ -12,11 +11,11 @@
       "nist_sp_800_218a": {
         "ssdf_practice": "PW.8.2",
         "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
-      }
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
     },
     "hidden_context_exposure": {
-      "owasp_requested_edition": "2026-unverified",
-      "owasp_id": "LLM07:2025",
+      "owasp_id": "LLM08:2026",
       "nist_ai_rmf": {
         "function": "MEASURE",
         "subcategory": "MEASURE 2.7"
@@ -25,11 +24,11 @@
       "nist_sp_800_218a": {
         "ssdf_practice": "PW.1.1",
         "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
-      }
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
     },
     "data_leakage": {
-      "owasp_requested_edition": "2026-unverified",
-      "owasp_id": "LLM02:2025",
+      "owasp_id": "LLM02:2026",
       "nist_ai_rmf": {
         "function": "GOVERN",
         "subcategory": "GOVERN 1.1"
@@ -38,11 +37,11 @@
       "nist_sp_800_218a": {
         "ssdf_practice": "PW.1.1",
         "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
-      }
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
     },
     "excessive_agency": {
-      "owasp_requested_edition": "2026-unverified",
-      "owasp_id": "LLM06:2025",
+      "owasp_id": "LLM03:2026",
       "nist_ai_rmf": {
         "function": "MANAGE",
         "subcategory": "MANAGE 2.4"
@@ -51,11 +50,11 @@
       "nist_sp_800_218a": {
         "ssdf_practice": "PW.8.2",
         "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
-      }
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
     },
     "unsafe_output": {
-      "owasp_requested_edition": "2026-unverified",
-      "owasp_id": "LLM05:2025",
+      "owasp_id": "LLM10:2026",
       "nist_ai_rmf": {
         "function": "MEASURE",
         "subcategory": "MEASURE 2.7"
@@ -64,11 +63,11 @@
       "nist_sp_800_218a": {
         "ssdf_practice": "PW.8.2",
         "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
-      }
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
     },
     "quality": {
-      "owasp_requested_edition": "2026-unverified",
-      "owasp_id": "LLM09:2025",
+      "owasp_id": "LLM07:2026",
       "nist_ai_rmf": {
         "function": "MEASURE",
         "subcategory": "MEASURE 2.5"
@@ -77,7 +76,81 @@
       "nist_sp_800_218a": {
         "ssdf_practice": "PW.8.2",
         "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
-      }
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
+    }
+  },
+  "owasp_source": {
+    "repository": "fenner888/toolbox",
+    "path": "security-baseline/7-ai.md",
+    "url": "https://github.com/fenner888/toolbox/blob/main/security-baseline/7-ai.md",
+    "hidden_context_exposure": "https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/9253e38ade58e959b531c0c5c9a4842272c9cd0e/2026/final/LLM08_HiddenContextExposure.md"
+  },
+  "case_overrides": {
+    "agency-daily-real-worker-budget": {
+      "owasp_id": "LLM06:2026",
+      "nist_ai_rmf": {
+        "function": "MANAGE",
+        "subcategory": "MANAGE 2.4"
+      },
+      "nist_ai_600_1_risk": "Human-AI Configuration",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
+    },
+    "agency-daily-fetch-cap": {
+      "owasp_id": "LLM06:2026",
+      "nist_ai_rmf": {
+        "function": "MANAGE",
+        "subcategory": "MANAGE 2.4"
+      },
+      "nist_ai_600_1_risk": "Human-AI Configuration",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
+    },
+    "agency-no-retry": {
+      "owasp_id": "LLM06:2026",
+      "nist_ai_rmf": {
+        "function": "MANAGE",
+        "subcategory": "MANAGE 2.4"
+      },
+      "nist_ai_600_1_risk": "Human-AI Configuration",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
+    },
+    "agency-daily-attempt-cap": {
+      "owasp_id": "LLM06:2026",
+      "nist_ai_rmf": {
+        "function": "MANAGE",
+        "subcategory": "MANAGE 2.4"
+      },
+      "nist_ai_600_1_risk": "Human-AI Configuration",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
+    },
+    "unsafe-oversized-response": {
+      "owasp_id": "LLM06:2026",
+      "nist_ai_rmf": {
+        "function": "MANAGE",
+        "subcategory": "MANAGE 2.4"
+      },
+      "nist_ai_600_1_risk": "Human-AI Configuration",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      },
+      "owasp_source": "fenner888/toolbox/security-baseline/7-ai.md"
     }
   }
 }

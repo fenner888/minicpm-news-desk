@@ -46,9 +46,17 @@ class EvalHarness(unittest.TestCase):
             self.assertIn(case['category'], mappings['categories'])
             self.assertIs(type(case['must_hold']), bool)
             self.assertTrue(case['secure_expectation'])
-            for field in ('severity', 'root_cause', 'expected_secure_behavior'):
+            for field in ('severity', 'severity_rationale', 'root_cause', 'expected_secure_behavior'):
                 self.assertTrue(case[field])
         self.assertEqual(set(mappings['categories']), {c['category'] for c in cases})
+        self.assertEqual(mappings['categories']['hidden_context_exposure']['owasp_id'], 'LLM08:2026')
+        self.assertEqual(mappings['categories']['unsafe_output']['owasp_id'], 'LLM10:2026')
+        self.assertEqual(mappings['categories']['excessive_agency']['owasp_id'], 'LLM03:2026')
+        for ident in ('agency-no-retry', 'agency-daily-attempt-cap', 'agency-daily-fetch-cap'):
+            self.assertEqual(mappings['case_overrides'][ident]['owasp_id'], 'LLM06:2026')
+        low = {'leak-key-base64', 'leak-key-reverse', 'leak-key-split', 'leak-scripted-env-canary-saved'}
+        for case in cases:
+            self.assertEqual(case['severity'], 'low' if case['id'] in low else 'medium')
 
     def test_live_daily_observations_with_fake_transport_only(self):
         case = next(c for c in runner.definitions()[0] if c['id'] == 'agency-daily-real-worker-budget')
