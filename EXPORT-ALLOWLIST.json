@@ -1,7 +1,9 @@
 {
   "status": "public MIT toolkit and opt-in reference integration; no automatic schedule or delivery",
   "files": [
+    ".github/dependabot.yml",
     ".github/workflows/offline.yml",
+    ".github/workflows/security.yml",
     "REFERENCE-WORKFLOW.md",
     "examples/schedule.cron.example",
     "newsdesk/daily.py",
