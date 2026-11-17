@@ -2,6 +2,11 @@
 
 Public package versions; updating source does not automatically update a private deployment.
 
+## Unreleased
+
+- Add pinned Gitleaks secret scanning and weekly GitHub Actions dependency updates
+  with a seven-day cooldown. Runtime and model settings are unchanged.
+
 ## 0.8.1 — September 21, 2026
 
 Deterministic repairs derived from the private frozen benchmark of 0.8.0
