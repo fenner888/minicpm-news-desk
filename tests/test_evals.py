@@ -94,6 +94,18 @@ class EvalHarness(unittest.TestCase):
             self.assertEqual(observed['transformed_key_saved'], bool(echo))
             if echo:self.assertNotIn(echo, runner.canonical(transcript))
 
+    def test_daily_expectation_rejects_source_only_model_build(self):
+        case = next(c for c in runner.definitions()[0] if c['id'] == 'agency-daily-real-worker-budget')
+        cases = ([case], runner.definitions()[1])
+        for reject in (False, True):
+            verifier = patch('evals.runner.digest.verified_card', side_effect=ValueError('synthetic_rejection')) if reject else patch('evals.runner.digest.verified_card', wraps=runner.digest.verified_card)
+            with self.subTest(reject=reject), verifier as verify_card, patch('evals.runner.definitions', return_value=cases):
+                record = runner.records()[0]
+                self.assertEqual(verify_card.call_count, 4)
+                self.assertEqual(record['status'], 'finding' if reject else 'pass')
+                self.assertEqual(record['observed_outcome']['model_verified'], not reject)
+                self.assertTrue(record['observed_outcome']['conditions_preserved'])
+
     def test_worker_determinism_and_redaction(self):
         cases, _ = runner.definitions()
         for ident in ('quality-gold-verbatim', 'leak-key-base64', 'pi-direct-hold', 'quality-legacy-gold'):

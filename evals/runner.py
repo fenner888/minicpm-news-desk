@@ -147,6 +147,7 @@ def daily_probe(case, directory, cfg):
             parts = daily.ready_parts(root, store, edition['edition'])
             return {'attempts': attempts, 'fetches': daily.get_meta(store, 'fetches:' + edition['edition']),
                     'ready': edition['status'] == 'ready_review_required',
+                    'model_verified': edition['model_cards'] > 0,
                     'conditions_preserved': '$0.20' in ''.join(parts)}
         edition = daily.build(root, store, settings, now, current_window=True)
         row = store.db.execute('SELECT id FROM editions').fetchone()
