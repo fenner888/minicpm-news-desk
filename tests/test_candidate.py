@@ -1,3 +1,4 @@
+import base64
 import copy
 import io
 import json
@@ -270,6 +271,23 @@ class NetworkTests(unittest.TestCase):
         opener,_=self.fake_opener(lambda path,p:{'echo':'synthetic-unit-test-key'} if path=='/v1/chat/completions' else p)
         with patch.dict(os.environ,{'MINICPM_API_KEY':'synthetic-unit-test-key'}):
             with self.assertRaisesRegex(ValueError,'credential_echo'):n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener)
+
+    def test_transformed_secret_echo_withheld(self):
+        for key in ['sk-test-SYNTHETIC-echo-???~~~'+suffix for suffix in ('','!','!!')]+['!?~'*6]:
+            encoded=[encode(key.encode()).decode() for encode in (base64.b64encode,base64.urlsafe_b64encode)]
+            echoes=encoded+[v.rstrip('=') for v in encoded]+[key[::-1], ' '.join(key), '.:'.join(key), '\n—'.join(key)]
+            for echo in echoes:
+                with self.subTest(echo=echo):
+                    opener,_=self.fake_opener(lambda path,p:{'echo':echo} if path=='/v1/chat/completions' else p)
+                    with patch.dict(os.environ,{'MINICPM_API_KEY':key}):
+                        with self.assertRaisesRegex(ValueError,'credential_echo'):
+                            n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener)
+
+    def test_secret_echo_check_allows_empty_and_unrelated_strings(self):
+        for value in ('','A fictional tool uses base64 encoding and hyphen-separated labels.'):
+            opener,_=self.fake_opener(lambda path,p:{'note':value} if path=='/v1/chat/completions' else p)
+            with patch.dict(os.environ,{'MINICPM_API_KEY':'synthetic-unit-test-key'}):
+                self.assertEqual(n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener),{'note':value})
 
 
 class WorkflowTests(unittest.TestCase):

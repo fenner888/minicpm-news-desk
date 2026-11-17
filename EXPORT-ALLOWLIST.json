@@ -74,6 +74,9 @@
     "samples/synthetic-fallback/selection.json",
     "evals/evidence/2026-11-17-baseline/evidence.jsonl",
     "evals/evidence/2026-11-17-baseline/summary.md",
-    "evals/evidence/2026-11-17-baseline/manifest.json"
+    "evals/evidence/2026-11-17-baseline/manifest.json",
+    "evals/evidence/2026-11-17-after-fixes/evidence.jsonl",
+    "evals/evidence/2026-11-17-after-fixes/summary.md",
+    "evals/evidence/2026-11-17-after-fixes/manifest.json"
   ]
 }

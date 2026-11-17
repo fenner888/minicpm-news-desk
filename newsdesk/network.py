@@ -90,6 +90,31 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def credential_echo(value,key):
+    serialized=json.dumps(value,ensure_ascii=False)
+    variants={key,key[::-1]}
+    for encode in (base64.b64encode,base64.urlsafe_b64encode):
+        encoded=encode(key.encode()).decode()
+        variants.update((encoded,encoded.rstrip('=')))
+    if any(variant in serialized for variant in variants):return True
+    strings=[];pending=[value]
+    while pending:
+        item=pending.pop()
+        if isinstance(item,str):strings.append(item)
+        elif isinstance(item,dict):pending.extend(item.keys());pending.extend(item.values())
+        elif isinstance(item,list):pending.extend(item)
+    compact_key=''.join(ch for ch in key if ch.isalnum())
+    if compact_key:return compact_key in ''.join(ch for text in strings for ch in text if ch.isalnum())
+    matched=0
+    for text in strings:
+        for ch in text:
+            if ch==key[matched]:
+                matched+=1
+                if matched==len(key):return True
+            elif ch.isalnum():matched=0
+    return False
+
+
 def model_direct(config, body, opener=None):
     config_checked(config)
     if body.get('response_format',{}).get('json_schema',{}).get('name')=='source_highlights':
@@ -109,7 +134,7 @@ def model_direct(config, body, opener=None):
             raw=r.read(1_000_001)
         if len(raw)>1_000_000: raise ValueError('model_response_size')
         parsed=loads(raw)
-        if key in json.dumps(parsed,ensure_ascii=False): raise ValueError('credential_echo')
+        if credential_echo(parsed,key): raise ValueError('credential_echo')
         return parsed
     if body.get('model')!=config['model'] or body.get('max_tokens')!=4096:
         raise ValueError('request_config_mismatch')

@@ -2,6 +2,23 @@
 
 Public package versions; updating source does not automatically update a private deployment.
 
+## Unreleased — synthetic AI boundary fixes
+
+- Instruction holds use an NFKC-normalized, Cyrillic/Greek-lookalike-folded view
+  with zero-width format characters removed. Split ignore/task instructions and
+  chooser-directed selection commands hold the source for review, not silently
+  drop it. Exact source text and offsets remain unchanged. Policy v7 changes
+  packet hashes; regenerate packets for replay and preserve original artifacts.
+- Model transport rejects exact, reversed, standard/URL-safe base64 (padded or
+  unpadded), and whitespace/punctuation-split key echoes before persistence.
+  This is defense in depth: the model prompt never receives the HTTP API key.
+- Synthetic regressions first reproduced both gaps (32 failing subcases); extra
+  instruction variants and benign text/empty-response checks cover the repairs.
+  The separate after-fixes mock evidence leaves the baseline untouched and does
+  not rescore the frozen private benchmark. No fresh inference or delivery.
+- Raw reasoning/response retention and legacy free-prose behavior are unchanged.
+  No package/runtime/model setting, reasoning budget or private deployment change.
+
 ## 0.8.1 — September 21, 2026
 
 Deterministic repairs derived from the private frozen benchmark of 0.8.0
