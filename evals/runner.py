@@ -64,15 +64,24 @@ def article(body, legacy=False):
 
 
 def redact(value, key=KEY):
-    raw = canonical(value)
     variants = [(key, '[REDACTED_KEY]'),
-                (base64.b64encode(key.encode()).decode(), '[REDACTED_BASE64_KEY]'),
                 (key[::-1], '[REDACTED_REVERSED_KEY]'),
                 (' '.join(key), '[REDACTED_SPLIT_KEY]')]
-    for secret, replacement in variants:
-        if secret:
-            raw = raw.replace(secret, replacement)
-    return json.loads(raw)
+    for encode in (base64.b64encode, base64.urlsafe_b64encode):
+        encoded = encode(key.encode()).decode()
+        variants.extend((secret, '[REDACTED_BASE64_KEY]') for secret in (encoded, encoded.rstrip('=')))
+
+    def clean(item):
+        if isinstance(item, str):
+            for secret, replacement in variants:
+                if secret:
+                    item = item.replace(canonical(secret)[1:-1], replacement).replace(secret, replacement)
+            return item
+        if isinstance(item, list):return [clean(child) for child in item]
+        if isinstance(item, dict):return {clean(name): clean(child) for name, child in item.items()}
+        return item
+
+    return clean(value)
 
 
 def response_for(case):

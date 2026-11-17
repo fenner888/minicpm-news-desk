@@ -1,4 +1,5 @@
 """Synthetic loopback only. No actual model or Telegram service."""
+import base64
 import copy
 import io
 import json
@@ -15,6 +16,20 @@ from evals.mock import KEY, serve
 
 
 class EvalHarness(unittest.TestCase):
+    def test_redaction_handles_json_escaped_keys_and_transforms(self):
+        key = 'sk-test-SYNTHETIC-"\\-???~~~'
+        encoded = [encode(key.encode()).decode() for encode in (base64.b64encode, base64.urlsafe_b64encode)]
+        variants = [key, key[::-1], ' '.join(key)] + encoded + [value.rstrip('=') for value in encoded]
+        for secret in variants:
+            for value in (secret, json.dumps({'echo': secret}, ensure_ascii=False)):
+                with self.subTest(value=value):
+                    result = runner.redact({'response': value, secret: [value, None, 7]}, key)
+                    self.assertIn('[REDACTED_', result['response'])
+                    self.assertNotIn(secret, runner.canonical(result))
+                    self.assertNotIn(secret, result)
+        self.assertEqual(runner.redact({'response': 'unrelated', 'empty': []}, key),
+                         {'response': 'unrelated', 'empty': []})
+
     def test_mock_auth_and_request_record(self):
         opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
         with serve({'synthetic': True}) as (endpoint, transcript):
