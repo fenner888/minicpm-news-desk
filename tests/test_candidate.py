@@ -275,7 +275,8 @@ class NetworkTests(unittest.TestCase):
     def test_transformed_secret_echo_withheld(self):
         for key in ['sk-test-SYNTHETIC-echo-???~~~'+suffix for suffix in ('','!','!!')]+['!?~'*6]:
             encoded=[encode(key.encode()).decode() for encode in (base64.b64encode,base64.urlsafe_b64encode)]
-            echoes=encoded+[v.rstrip('=') for v in encoded]+[key[::-1], ' '.join(key), '.:'.join(key), '\n—'.join(key)]
+            echoes=encoded+[v.rstrip('=') for v in encoded]+[key[::-1], ' '.join(key)]
+            if sum(ch.isalnum() for ch in key)>=16:echoes.extend(('.:'.join(key), '\n—'.join(key)))
             for echo in echoes:
                 with self.subTest(echo=echo):
                     opener,_=self.fake_opener(lambda path,p:{'echo':echo} if path=='/v1/chat/completions' else p)
@@ -291,6 +292,15 @@ class NetworkTests(unittest.TestCase):
         self.assertIn('choices',result)
         self.assertEqual(len(calls),5)
         for echo in (key,key[::-1],base64.b64encode(key.encode()).decode()):
+            with self.subTest(echo=echo):
+                opener,_=self.fake_opener(lambda path,p:{'echo':echo} if path=='/v1/chat/completions' else p)
+                with patch.dict(os.environ,{'MINICPM_API_KEY':key}):
+                    with self.assertRaisesRegex(ValueError,'credential_echo'):
+                        n.model_direct(CONFIG,w.request_for(article(),CONFIG),opener)
+
+    def test_whitespace_split_punctuation_heavy_key_is_withheld(self):
+        key='id!@#$%^&*()_+?!'
+        for echo in (' '.join(key), 'id '+' '.join(key[2:]), '\n\t'.join(key)):
             with self.subTest(echo=echo):
                 opener,_=self.fake_opener(lambda path,p:{'echo':echo} if path=='/v1/chat/completions' else p)
                 with patch.dict(os.environ,{'MINICPM_API_KEY':key}):

@@ -13,7 +13,8 @@ Public package versions; updating source does not automatically update a private
   unpadded), and whitespace/punctuation-split key echoes before persistence.
   This is defense in depth: the model prompt never receives the HTTP API key.
   Lossy compact-key matching requires at least 16 retained characters to avoid
-  false positives on valid punctuation-heavy keys.
+  false positives on valid punctuation-heavy keys. Whitespace-only splitting
+  is checked against the full key, including punctuation, regardless of that cap.
 - Synthetic regressions first reproduced both gaps (32 failing subcases); extra
   instruction variants and benign text/empty-response checks cover the repairs.
   The separate after-fixes mock evidence leaves the baseline untouched and does

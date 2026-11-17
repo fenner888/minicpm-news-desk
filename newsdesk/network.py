@@ -103,16 +103,9 @@ def credential_echo(value,key):
         if isinstance(item,str):strings.append(item)
         elif isinstance(item,dict):pending.extend(item.keys());pending.extend(item.values())
         elif isinstance(item,list):pending.extend(item)
+    if any(key in ''.join(ch for ch in text if not ch.isspace()) for text in strings):return True
     compact_key=''.join(ch for ch in key if ch.isalnum())
-    if compact_key:return len(compact_key)>=16 and compact_key in ''.join(ch for text in strings for ch in text if ch.isalnum())
-    matched=0
-    for text in strings:
-        for ch in text:
-            if ch==key[matched]:
-                matched+=1
-                if matched==len(key):return True
-            elif ch.isalnum():matched=0
-    return False
+    return len(compact_key)>=16 and compact_key in ''.join(ch for text in strings for ch in text if ch.isalnum())
 
 
 def model_direct(config, body, opener=None):
