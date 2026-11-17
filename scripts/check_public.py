@@ -26,7 +26,7 @@ for name in sorted(expected):
             if isinstance(node,ast.Import):imports=[a.name.split('.')[0] for a in node.names]
             elif isinstance(node,ast.ImportFrom) and not node.level and node.module:imports=[node.module.split('.')[0]]
             for module in imports:
-                if module not in sys.stdlib_module_names and module!='newsdesk':errors.append({'external_import':name,'module':module})
+                if module not in sys.stdlib_module_names and module not in ('newsdesk','evals'):errors.append({'external_import':name,'module':module})
     if name.endswith(('.py','.md','.json','.yml')):
         raw=path.read_bytes()
         for pattern in [rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',rb'\bgh[pousr]_[A-Za-z0-9]{30,}\b',rb'\bAKIA[A-Z0-9]{16}\b',rb'\b[0-9]{8,12}:[A-Za-z0-9_-]{30,}\b']:

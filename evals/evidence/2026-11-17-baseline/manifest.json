@@ -1,0 +1,19 @@
+{
+  "run_id": "2026-11-17-baseline",
+  "git_sha": "c6181714c068d7c302e6923e32f9ca85952916ae",
+  "python": "3.12.16 (main, Oct 30 2026, 04:40:57) [GCC 11.4.0]",
+  "platform": "Linux-6.8.0-1060-aws-x86_64-with-glibc2.35",
+  "case_file_hashes": {
+    "evals/cases.json": "362fffe6630e6dfbdc555507fc6936652b4fe8a2aaa2114b510492d831edfe5b",
+    "evals/mappings.json": "c079823b4af53978e50fb058fb62b202eab920ca933d88b65c56844665f7fe20"
+  },
+  "started_at": "2026-11-17T20:29:31.936834+00:00",
+  "ended_at": "2026-11-17T20:29:34.903177+00:00",
+  "mode": "scripted_mock",
+  "harness_file_hashes": {
+    "evals/__init__.py": "b4546bdb8e4da332d833852833433848003662d9c78440676baa5546392fbebb",
+    "evals/__main__.py": "74fff10eb2bd330c92909b27a5a9ae84f41b3f268a5c04f51f849276919f19c6",
+    "evals/mock.py": "de283c479e5a31fac111ab673b39fca3a693c492335ab4c9b695f2f2d0838e86",
+    "evals/runner.py": "3570eb87b9029c99e1256070fa81ae8c1d9c668a0579a55edf895ea5d11f4295"
+  }
+}

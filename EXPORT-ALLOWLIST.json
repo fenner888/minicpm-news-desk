@@ -1,6 +1,14 @@
 {
   "status": "public MIT toolkit and opt-in reference integration; no automatic schedule or delivery",
   "files": [
+    "EVALS.md",
+    "evals/__init__.py",
+    "evals/__main__.py",
+    "evals/mock.py",
+    "evals/runner.py",
+    "evals/cases.json",
+    "evals/mappings.json",
+    "tests/test_evals.py",
     ".github/dependabot.yml",
     ".github/workflows/offline.yml",
     ".github/workflows/security.yml",
@@ -65,6 +73,9 @@
     "samples/synthetic-fallback/index.html",
     "samples/synthetic-fallback/manifest.json",
     "samples/synthetic-fallback/packet.json",
-    "samples/synthetic-fallback/selection.json"
+    "samples/synthetic-fallback/selection.json",
+    "evals/evidence/2026-11-17-baseline/evidence.jsonl",
+    "evals/evidence/2026-11-17-baseline/summary.md",
+    "evals/evidence/2026-11-17-baseline/manifest.json"
   ]
 }

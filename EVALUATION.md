@@ -1,5 +1,9 @@
 # Evaluation — MiniCPM News Desk 0.8.1
 
+The separate [synthetic application-boundary suite](EVALS.md) uses scripted
+loopback HTTP responses, not MiniCPM inference. Its findings and replay evidence
+do not rescore the private frozen benchmark or establish model robustness.
+
 ## September 21 frozen benchmark of 0.8.0 and deterministic repairs (0.8.1)
 
 A private frozen-set benchmark ran unchanged 0.8.0 on eight GitHub changelog
