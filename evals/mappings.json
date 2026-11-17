@@ -1,0 +1,83 @@
+{
+  "status": "Provisional analyst crosswalk, not compliance certification. Requested OWASP edition: 2026 (not verified; offline task). IDs use the established OWASP LLM Top 10 2025 taxonomy and must not be cited as a verified 2026 publication. NIST labels/practices are suggested mappings, not assertions of full control implementation.",
+  "categories": {
+    "prompt_injection": {
+      "owasp_requested_edition": "2026-unverified",
+      "owasp_id": "LLM01:2025",
+      "nist_ai_rmf": {
+        "function": "MEASURE",
+        "subcategory": "MEASURE 2.7"
+      },
+      "nist_ai_600_1_risk": "Information Security",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      }
+    },
+    "hidden_context_exposure": {
+      "owasp_requested_edition": "2026-unverified",
+      "owasp_id": "LLM07:2025",
+      "nist_ai_rmf": {
+        "function": "MEASURE",
+        "subcategory": "MEASURE 2.7"
+      },
+      "nist_ai_600_1_risk": "Information Security",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.1.1",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      }
+    },
+    "data_leakage": {
+      "owasp_requested_edition": "2026-unverified",
+      "owasp_id": "LLM02:2025",
+      "nist_ai_rmf": {
+        "function": "GOVERN",
+        "subcategory": "GOVERN 1.1"
+      },
+      "nist_ai_600_1_risk": "Data Privacy",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.1.1",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      }
+    },
+    "excessive_agency": {
+      "owasp_requested_edition": "2026-unverified",
+      "owasp_id": "LLM06:2025",
+      "nist_ai_rmf": {
+        "function": "MANAGE",
+        "subcategory": "MANAGE 2.4"
+      },
+      "nist_ai_600_1_risk": "Human-AI Configuration",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      }
+    },
+    "unsafe_output": {
+      "owasp_requested_edition": "2026-unverified",
+      "owasp_id": "LLM05:2025",
+      "nist_ai_rmf": {
+        "function": "MEASURE",
+        "subcategory": "MEASURE 2.7"
+      },
+      "nist_ai_600_1_risk": "Information Security",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      }
+    },
+    "quality": {
+      "owasp_requested_edition": "2026-unverified",
+      "owasp_id": "LLM09:2025",
+      "nist_ai_rmf": {
+        "function": "MEASURE",
+        "subcategory": "MEASURE 2.5"
+      },
+      "nist_ai_600_1_risk": "Confabulation",
+      "nist_sp_800_218a": {
+        "ssdf_practice": "PW.8.2",
+        "note": "SSDF practice crosswalk for AI development; not an independently verified AI-profile control identifier."
+      }
+    }
+  }
+}

@@ -47,6 +47,7 @@ The screenshot is a **fictional layout example**, not a fresh model result.
 
 See [EVALUATION.md](EVALUATION.md) for evidence and limitations, and
 [CHANGELOG.md](CHANGELOG.md) for the differences between versions.
+For scripted, zero-inference application boundary checks, see [EVALS.md](EVALS.md).
 
 ## One daily recap, not another hourly feed
 

@@ -1,0 +1,19 @@
+{
+  "run_id": "synthetic-v1",
+  "git_sha": "8c116a1e9d257ec23aed5187f851c23ad689aac7",
+  "python": "3.12.16 (main, Oct 30 2026, 04:40:57) [GCC 11.4.0]",
+  "platform": "Linux-6.8.0-1060-aws-x86_64-with-glibc2.35",
+  "case_file_hashes": {
+    "evals/cases.json": "4e7ff3a8fe4eb7bb4a27c88ffa3ebdebf6825ce333295365276e37f6fd08ed67",
+    "evals/mappings.json": "682043ddc868970dc33ea429780effd8ef8ca6370797daf1ae725f615f314613"
+  },
+  "started_at": "2026-11-17T20:19:17.076092+00:00",
+  "ended_at": "2026-11-17T20:19:20.276765+00:00",
+  "mode": "scripted_mock",
+  "harness_file_hashes": {
+    "evals/__init__.py": "b4546bdb8e4da332d833852833433848003662d9c78440676baa5546392fbebb",
+    "evals/__main__.py": "74fff10eb2bd330c92909b27a5a9ae84f41b3f268a5c04f51f849276919f19c6",
+    "evals/mock.py": "de283c479e5a31fac111ab673b39fca3a693c492335ab4c9b695f2f2d0838e86",
+    "evals/runner.py": "a58240cbfff58ec8ca4714e1f70a9600277b8304a5cf46cdf9357f7ae3392c9b"
+  }
+}

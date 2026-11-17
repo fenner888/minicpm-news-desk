@@ -12,6 +12,7 @@ jobs:
         with:
           python-version: '3.14.7'
       - run: python -m unittest discover -s tests -v
+      - run: python3.14 -m evals run --out "$RUNNER_TEMP/newsdesk-ai-evals"
       - run: python scripts/check_public.py
       - run: python -m newsdesk demo --out outputs/ci-article
       - run: python -m newsdesk.digest demo --out outputs/ci-daily
