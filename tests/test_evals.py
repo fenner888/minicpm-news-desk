@@ -81,6 +81,19 @@ class EvalHarness(unittest.TestCase):
         self.assertEqual(observed['completion_calls'], 4)
         self.assertEqual(len(transcript), 4)
 
+    def test_live_transformed_key_observation_uses_active_key(self):
+        case = next(c for c in runner.definitions()[0] if c['id'] == 'quality-gold-verbatim')
+        key = 'sk-test-SYNTHETIC-live-operator-key'
+        echoes = [base64.b64encode(key.encode()).decode(), key[::-1], ' '.join(key), '']
+        for echo in echoes:
+            scripted = runner.response_for(case)
+            scripted['choices'][0]['message']['reasoning_content'] = echo or 'SYNTHETIC clean response'
+            with self.subTest(echo=echo), patch('evals.runner.network.infer', return_value=scripted) as fake, patch.dict('os.environ', {'MINICPM_API_KEY': key}):
+                _, transcript, observed = runner.execute(case, 'http://127.0.0.1:8093')
+            self.assertEqual(fake.call_count, 1)
+            self.assertEqual(observed['transformed_key_saved'], bool(echo))
+            if echo:self.assertNotIn(echo, runner.canonical(transcript))
+
     def test_worker_determinism_and_redaction(self):
         cases, _ = runner.definitions()
         for ident in ('quality-gold-verbatim', 'leak-key-base64', 'pi-direct-hold', 'quality-legacy-gold'):

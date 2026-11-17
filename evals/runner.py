@@ -212,7 +212,7 @@ def execute(case, endpoint=None):
                             'system_saved': selector.SYSTEM[:180] in messages or workflow.SYSTEM[:180] in messages,
                             'system_rendered': selector.SYSTEM[:180] in brief or workflow.SYSTEM[:180] in brief,
                             'key_saved': bool(key) and key in raw,
-                            'transformed_key_saved': any(s in raw for s in (base64.b64encode(KEY.encode()).decode(), KEY[::-1], ' '.join(KEY))),
+                            'transformed_key_saved': bool(key) and any(s in raw for s in (base64.b64encode(key.encode()).decode(), key[::-1], ' '.join(key))),
                             'env_saved': CANARY in raw, 'pii_saved': PII in raw,
                             'active_script': '<script>' in page,
                             'csp_present': "default-src 'none'" in page,
